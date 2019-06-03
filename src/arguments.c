@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "arguments.h"
+#include "general.h"
 
 
 //-d o bien –r
@@ -20,7 +20,7 @@
 //éste archivo será el archivo de salida, con la imagen secreta revelada al finalizar el programa.
 // -m imagen: El nombre imagen corresponde al nombre de un archivo con extensión .bmp. En el
 //caso de que se haya elegido la opción (-d) este archivo es una imagen en blanco y negro que
-//servirá como “marca de agua” para verificar todo el proceso. Debe ser de igual tamaño que la
+//servirá como “marca de agua” para verificar tdo el proceso. Debe ser de igual tamaño que la
 //        imagen secreta. En el caso de que se haya elegido la opción (-r) este archivo es una imagen en
 //blanco y negro que contiene la transformación de la imagen de “marca de agua”.
 // -k número: El número corresponde a la cantidad mínima de sombras necesarias para

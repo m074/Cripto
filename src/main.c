@@ -2,14 +2,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "arguments.h"
+#include "general.h"
 
 int main(int argc, char *argv[]){
     Configuration* cfg = parse_options(argc,argv);
-    printf(cfg->m_image_name);
-    printf("%d",cfg->number_k);
+    printf("m_image: %s\n",cfg->m_image_name);
+
+    Bmp* bmp = read_bmp("Marca.bmp");
+
+    printf("%d %d \n", bmp->height, bmp->width);
 
     exit(EXIT_SUCCESS);
-    return 0 ;
 }
 

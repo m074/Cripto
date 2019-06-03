@@ -5,7 +5,7 @@ set(CMAKE_C_STANDARD 99)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread --std=c99 -pedantic -pedantic-errors -Wall -Wextra -Werror -Wno-unused-parameter -D_POSIX_C_SOURCE=200112L -O1 -fsanitize=address")
 #agregar sanidad
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread --std=c99 -pedantic -pedantic-errors -Wall -Wextra -Werror -Wno-unused-parameter -D_POSIX_C_SOURCE=200112L -O1")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread --std=c99 -pedantic -pedantic-errors -Wall -Wextra -Werror -Wno-unused-parameter -D_POSIX_C_SOURCE=200112L -O0")
 
 
 #####################################################################
@@ -18,6 +18,6 @@ aux_source_directory(src COMMON_SOURCE_FILES)
 #aux_source_directory(src/database DB_SOURCE_FILES)
 
 
-add_executable(cripto  ${COMMON_SOURCE_FILES} src/arguments.c src/general.h src/arguments.h)
+add_executable(cripto  ${COMMON_SOURCE_FILES} src/arguments.c src/general.h src/file_manager.c)
 #target_link_libraries(database ${SQLITE3_LIBRARIES})
 #####################################################################
