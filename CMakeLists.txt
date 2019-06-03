@@ -18,6 +18,6 @@ aux_source_directory(src COMMON_SOURCE_FILES)
 #aux_source_directory(src/database DB_SOURCE_FILES)
 
 
-add_executable(cripto  ${COMMON_SOURCE_FILES} src/arguments.c src/general.h)
+add_executable(cripto  ${COMMON_SOURCE_FILES} src/arguments.c src/general.h src/arguments.h)
 #target_link_libraries(database ${SQLITE3_LIBRARIES})
 #####################################################################
