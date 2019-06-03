@@ -1,0 +1,4 @@
+#ifndef CRIPTO_GENERAL_H
+#define CRIPTO_GENERAL_H
+
+#endif //CRIPTO_GENERAL_H
