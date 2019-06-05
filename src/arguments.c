@@ -38,7 +38,7 @@ void help();
 
 
 Configuration* parse_options(int argc, char *argv[]){
-    Configuration* cfg=calloc(0, sizeof(Configuration));
+    Configuration* cfg=malloc(sizeof(Configuration));
     int c;
     while ((c = getopt (argc, argv, "hi:d:r:s:m:k:n")) != -1){
         switch (c){
