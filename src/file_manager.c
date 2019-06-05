@@ -24,3 +24,28 @@ BBuffer* readfile(char* filename){
 
     return bb;
 }
+
+int writefile(BBuffer* bb, char* filename){
+    FILE *fd;
+    if ((fd = fopen(filename, "rb")) == NULL)
+    {
+        return 0;
+    }
+    fwrite(bb->p,1,bb->length,fd); //TODO arreglar
+    fclose(fd);
+}
+
+
+BBuffer* copy_bbuffer(BBuffer* bb){
+    BBuffer* bb2 = malloc(sizeof(BBuffer));
+    bb2->length = bb->length;
+    bb2->p = malloc(sizeof(bb->length));
+    memccpy(bb2->p,bb->p,bb->length);
+
+    return bb2;
+}
+
+void free_bbuffer(BBuffer* bb){
+        free(bb->p);
+        free(bb);
+}

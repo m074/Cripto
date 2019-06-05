@@ -41,7 +41,7 @@ typedef struct bmp_t
     u_int8_t   bits;
     u_int32_t  offset;
     BBuffer*   bb;
-} Bmp;
+} Img;
 
 typedef struct conf_t
 {
@@ -53,11 +53,18 @@ typedef struct conf_t
     int number_n;
 } Configuration;
 
-
-Bmp* read_bmp(char* filename);
+Configuration* parse_options(int argc, char *argv[]);
 
 BBuffer* readfile(char* filename);
 
-Configuration* parse_options(int argc, char *argv[]);
+int writefile(BBuffer* bb, char* filename);
+
+BBuffer* copy_bbuffer(BBuffer* bb);
+
+void free_bbuffer(BBuffer* bb);
+
+Img* read_bmp(char* filename);
+
+
 
 #endif //CRIPTO_GENERAL_H
