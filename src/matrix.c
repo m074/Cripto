@@ -1,246 +1,266 @@
-#define SUCCESS 1
-#define FAILURE !SUCCESS
+/* taken from http://theory.stanford.edu/~arbrad/pfe/06/matrix.c */
 
+#include <assert.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include "matrix.h"
 
-// static const int inverses[] = {1, 126, 84, 63, 201, 42, 36, 157, 28, 226, 137, 21, 58, 18, 67, 204, 192, 14, 185, 113,
-// 12, 194, 131, 136, 241, 29, 93, 9, 26, 159, 81, 102, 213, 96, 208, 7, 95, 218, 103, 182, 49, 6, 216, 97, 106, 191, 235,
-// 68, 41, 246, 64, 140, 90, 172, 178, 130, 229, 13, 234, 205, 107, 166, 4, 51, 112, 232, 15, 48, 211, 104, 99, 129, 196,
-// 173, 164, 109, 163, 177, 197, 91, 31, 150, 124, 3, 189, 108, 176, 174, 110, 53, 80, 221, 27, 243, 37, 34, 44, 146, 71,
-// 123, 169, 32, 39, 70, 153, 45, 61, 86, 76, 89, 199, 65, 20, 240, 227, 132, 118, 117, 135, 228, 195, 179, 100, 83, 249,
-// 2, 168, 151, 72, 56, 23, 116, 134, 133, 119, 24, 11, 231, 186, 52, 162, 175, 165, 190, 206, 98, 181, 212, 219, 82, 128,
-// 180, 105, 207, 217, 214, 8, 224, 30, 171, 198, 141, 77, 75, 143, 62, 248, 127, 101, 220, 160, 54, 74, 88, 142, 87, 78,
-// 55, 122, 152, 147, 40, 203, 236, 19, 139, 200, 247, 85, 144, 46, 17, 238, 22, 121, 73, 79, 161, 111, 187, 5, 210, 183, 
-// 16, 60, 145, 154, 35, 245, 202, 69, 148, 33, 156, 244, 43, 155, 38, 149, 170, 92, 225, 242, 158, 222, 10, 115, 120, 57,
-// 239, 138, 66, 237, 59, 47, 184, 233, 193, 230, 114, 25, 223, 94, 215, 209, 50, 188, 167, 125, 250};
+/* Creates a ``rows by cols'' matrix with all values 0.
+ * Returns NULL if rows <= 0 or cols <= 0 and otherwise a
+ * pointer to the new matrix.
+ */
+matrix * newMatrix(int rows, int cols) {
+	if (rows <= 0 || cols <= 0) return NULL;
 
-typedef struct matrix {
-	int rows;
-	int columns;
-	int ** data;
-} matrix;
+	// allocate a matrix structure
+	matrix * m = (matrix *) malloc(sizeof(matrix));
 
-int inverse(int i);
-matrix* newMatrix(int rows, int columns);
-int isDependent(int a, int b);
-matrix* randomMatrix(int n, int k);
-void matrixMuduleN(Matrix *m, int n);
-void coFactorMatrix(Matrix *m, Matrix *temp, int p, int q, int n);
-int determinant(Matrix *m, int n);
-Matrix *adjoint(Matrix *m);
+	// set dimensions
+	m->rows = rows;
+	m->cols = cols;
 
-void setSeed(int64_t s);
-uint8_t nextChar(void);
+	// allocate a double array of length rows * cols
+	m->data = (__uint8_t *) malloc(rows*cols*sizeof(double));
+	// set all data to 0
+	int i;
+	for (i = 0; i < rows*cols; i++)
+		m->data[i] = 0;
 
-void freeMatrix(Matrix *matrix)
+	return m;
+}
+
+/* Deletes a matrix.  Returns 0 if successful and -1 if mtx
+ * is NULL.
+ */
+int deleteMatrix(matrix * mtx) {
+	if (!mtx) return -1;
+	// free mtx's data
+	assert (mtx->data);
+	free(mtx->data);
+	// free mtx itself
+	free(mtx);
+	return 0;
+}
+
+#define ELEM(mtx, row, col) \
+  mtx->data[(col-1) * mtx->rows + (row-1)]
+
+/* Copies a matrix.  Returns NULL if mtx is NULL.
+ */
+matrix * copyMatrix(matrix * mtx) {
+	if (!mtx) return NULL;
+
+	// create a new matrix to hold the copy
+	matrix * cp = newMatrix(mtx->rows, mtx->cols);
+
+	// copy mtx's data to cp's data
+	memcpy(cp->data, mtx->data,
+		   mtx->rows * mtx->cols * sizeof(double));
+
+	return cp;
+}
+
+/* Sets the (row, col) element of mtx to val.  Returns 0 if
+ * successful, -1 if mtx is NULL, and -2 if row or col are
+ * outside of the dimensions of mtx.
+ */
+int setElement(matrix * mtx, int row, int col, __uint8_t val)
 {
-	for(int i=0; i<matrix->rows; i++){
-		for(int j=0; j<matrix->columns; j++){
-		free(matrix->data[i][j]);
-		}
-		free(matrix->data[i]);
-	}
-	free(matrix->data);
-	free(matrix);
+	if (!mtx) return -1;
+	assert (mtx->data);
+	if (row <= 0 || row > mtx->rows ||
+		col <= 0 || col > mtx->cols)
+		return -2;
+
+	ELEM(mtx, row, col) = val;
+	return 0;
 }
 
-matrix* newMatrix(int rows, int columns) {
-	matrix new;
+/* Sets the reference val to the value of the (row, col)
+ * element of mtx.  Returns 0 if successful, -1 if either
+ * mtx or val is NULL, and -2 if row or col are outside of
+ * the dimensions of mtx.
+ */
+int getElement(matrix * mtx, int row, int col,
+			   double * val) {
+	if (!mtx || !val) return -1;
+	assert (mtx->data);
+	if (row <= 0 || row > mtx->rows ||
+		col <= 0 || col > mtx->cols)
+		return -2;
 
-	new = malloc(sizeof(Matrix));
-	if(!resultado) {
-		exit(FAILURE);
-	}
-
-	new->rows = rows;
-	new->columns = columns;
-
-	new->data = malloc(sizeof(int*) * new->rows);
-	if(!new->data) {
-		exit(FAILURE);
-	}
-
-	for(i=0; i<rows; i++){
-		new->data[i] = malloc(sizeof(int*) * new->columns);
-		if(!new->data[i]) {
-		exit(FAILURE);
-		}
-		for(int j=0; j<new->columns; j++) {
-			mpz_init(new->data[i][j]);
-		}
-	}
-	return new;
-} 
-
-matrix* randomMatrix(int n, int k) {
-	matrix new;
-
-	new = malloc(sizeof(Matrix));
-	if(!resultado) {
-		exit(FAILURE);
-	}
-
-	new->rows = rows;
-	new->columns = columns;
-
-	new->data = malloc(sizeof(int*) * new->rows);
-	if(!new->data) {
-		exit(FAILURE);
-	}
-
-	for(i=0; i<n; i++){
-
-		new->data[i] = malloc(sizeof(int*) * new->columns);
-		if(!new->data[i]) {
-		exit(FAILURE);
-		}
-
-		for(j=0; j<k; j++){
-			new->data[i][j] = nextChar%251;
-		}
-	}
-	return new;
-} 
-
-void matrixMuduleN(Matrix *m, int n){
-	for(i=0; i<m->rows; i++) {
-		for(j=0; j<m->columns; j++) {
-			m->data[i][j]%=n;
-		}
-	}
+	*val = ELEM(mtx, row, col);
+	return 0;
 }
 
-matrix* transposeMatrix(Matrix *m) {
-	matrix new;
-
-	new = malloc(sizeof(Matrix));
-	if(!resultado) {
-		exit(FAILURE);
-	}
-
-	new->rows = rows;
-	new->columns = columns;
-
-	new->data = malloc(sizeof(int*) * new->rows);
-	if(!new->data) {
-		exit(FAILURE);
-	}
-
-	for(i=0; i<m->rows; i++){
-
-		new->data[i] = malloc(sizeof(int*) * new->columns);
-		if(!new->data[i]) {
-		exit(FAILURE);
-		}
-
-		for(j=0; j<m->columns; j++){
-			new->data[j][i] = m->data[i][j];
-		}
-	}
-	return new;
-} 
-
-/* Code for cofactor and adj is based on https://www.geeksforgeeks.org/adjoint-inverse-matrix/ */
-
-void coFactorMatrix(Matrix *m, Matrix *temp, int p, int q, int n) {
-	int i = 0, j = 0; 
-  
-    // Looping for each element of the matrix 
-    for (int row = 0; row < n; row++) 
-    { 
-        for (int col = 0; col < n; col++) 
-        { 
-            //  Copying into temporary matrix only those element 
-            //  which are not in given row and column 
-            if (row != p && col != q) 
-            { 
-                temp->data[i][j++] = m->data[row][col]; 
-  
-                // Row is filled, so increase row index and 
-                // reset col index 
-                if (j == n - 1) 
-                { 
-                    j = 0; 
-                    i++; 
-                } 
-            } 
-        } 
-    } 
-} 
-
-int determinant(Matrix *m, int n) 
-{ 
-    int D = 0; // Initialize result 
-  
-    //  Base case : if matrix contains single element 
-    if (n == 1) 
-        return m->data[0][0]; 
-  
-  	Matrix temp = newMatrix(m->rows,m->columns);
-    // To store cofactors 
-  
-    int sign = 1;  // To store sign multiplier 
-  
-     // Iterate for each element of first row 
-    for (int f = 0; f < n; f++) 
-    { 
-        // Getting Cofactor of A[0][f] 
-        getCofactor(m, temp, 0, f, n); 
-        D += sign * m->data[0][f] * determinant(temp, n - 1); 
-  
-        // terms are to be added with alternate sign 
-        sign = -sign; 
-    } 
-
-    freeMatrix(temp);
-  
-    return D; 
-} 
-
-Matrix *adjoint(Matrix *m) { 
-
-	Matrix adj = newMatrix(m->rows,m->columns);
-
-    if (m->rows == 1) 
-    { 
-        adj->data[0][0] = 1; 
-        return; 
-    } 
-  
-    // temp is used to store cofactors of A[][] 
-    int sign = 1;
-    Matrix temp = newMatrix(m->rows,m->columns); 
-  
-    for (int i=0; i<N; i++) 
-    { 
-        for (int j=0; j<N; j++) 
-        { 
-            // Get cofactor of A[i][j] 
-            getCofactor(A, temp, i, j, N); 
-  
-            // sign of adj[j][i] positive if sum of row 
-            // and column indexes is even. 
-            sign = ((i+j)%2==0)? 1: -1; 
-  
-            // Interchanging rows and columns to get the 
-            // transpose of the cofactor matrix 
-            adj[j][i] = (sign)*(determinant(temp, N-1)); 
-        } 
-    } 
-    freeMatrix(temp);
-    return adj;
-} 
-
-// int inverse(int i) {
-//   i %= 251;	
-//   return inverses[i - 1];
-// }
-
-void setSeed(int64_t s) {
- 	seed = (s ^ 0x5DEECE66DL) & ((1LL << 48) - 1);
+/* Sets the reference n to the number of rows of mtx.
+ * Returns 0 if successful and -1 if mtx or n is NULL.
+ */
+int nRows(matrix * mtx, int * n) {
+	if (!mtx || !n) return -1;
+	*n = mtx->rows;
+	return 0;
 }
 
-uint8_t nextChar(void) {
- 	seed = (seed * 0x5DEECE66DL + 0xBL) & ((1LL << 48) - 1);
- 	return (uint8_t)(seed>>40);
-} 
+/* Sets the reference n to the number of columns of mtx.
+ * Returns 0 if successful and -1 if mtx is NULL.
+ */
+int nCols(matrix * mtx, int * n) {
+	if (!mtx || !n) return -1;
+	*n = mtx->rows;
+	return 0;
+}
+
+/* Prints the matrix to stdout.  Returns 0 if successful
+ * and -1 if mtx is NULL.
+ */
+int printMatrix(matrix * mtx) {
+	if (!mtx) return -1;
+
+	int row, col;
+	for (row = 1; row <= mtx->rows; row++) {
+		for (col = 1; col <= mtx->cols; col++) {
+			// Print the floating-point element with
+			//  - either a - if negative or a space if positive
+			//  - at least 3 spaces before the .
+			//  - precision to the hundredths place
+			printf("%d ", ELEM(mtx, row, col));
+		}
+		// separate rows by newlines
+		printf("\n");
+	}
+	return 0;
+}
+
+/* Writes the transpose of matrix in into matrix out.
+ * Returns 0 if successful, -1 if either in or out is NULL,
+ * and -2 if the dimensions of in and out are incompatible.
+ */
+int transpose(matrix * in, matrix * out) {
+	if (!in || !out) return -1;
+	if (in->rows != out->cols || in->cols != out->rows)
+		return -2;
+
+	int row, col;
+	for (row = 1; row <= in->rows; row++)
+		for (col = 1; col <= in->cols; col++)
+			ELEM(out, col, row) = ELEM(in, row, col);
+	return 0;
+}
+
+/* Writes the sum of matrices mtx1 and mtx2 into matrix
+ * sum. Returns 0 if successful, -1 if any of the matrices
+ * are NULL, and -2 if the dimensions of the matrices are
+ * incompatible.
+ */
+int sum(matrix * mtx1, matrix * mtx2, matrix * sum) {
+	if (!mtx1 || !mtx2 || !sum) return -1;
+	if (mtx1->rows != mtx2->rows ||
+		mtx1->rows != sum->rows ||
+		mtx1->cols != mtx2->cols ||
+		mtx1->cols != sum->cols)
+		return -2;
+
+	int row, col;
+	for (col = 1; col <= mtx1->cols; col++)
+		for (row = 1; row <= mtx1->rows; row++)
+			ELEM(sum, row, col) =
+					ELEM(mtx1, row, col) + ELEM(mtx2, row, col);
+	return 0;
+}
+
+/* Writes the product of matrices mtx1 and mtx2 into matrix
+ * prod.  Returns 0 if successful, -1 if any of the
+ * matrices are NULL, and -2 if the dimensions of the
+ * matrices are incompatible.
+ */
+int product(matrix * mtx1, matrix * mtx2, matrix * prod) {
+	if (!mtx1 || !mtx2 || !prod) return -1;
+	if (mtx1->cols != mtx2->rows ||
+		mtx1->rows != prod->rows ||
+		mtx2->cols != prod->cols)
+		return -2;
+
+	int row, col, k;
+	for (col = 1; col <= mtx2->cols; col++)
+		for (row = 1; row <= mtx1->rows; row++) {
+			__uint8_t val = 0.0;
+			for (k = 1; k <= mtx1->cols; k++)
+				val += ELEM(mtx1, row, k) * ELEM(mtx2, k, col);
+			ELEM(prod, row, col) = val;
+		}
+	return 0;
+}
+
+/* Writes the dot product of vectors v1 and v2 into
+ * reference prod.  Returns 0 if successful, -1 if any of
+ * v1, v2, or prod are NULL, -2 if either matrix is not a
+ * vector, and -3 if the vectors are of incompatible
+ * dimensions.
+ */
+int dotProduct(matrix * v1, matrix * v2, double * prod) {
+	if (!v1 || !v2 || !prod) return -1;
+	if (v1->cols != 1 || v2->cols != 1) return -2;
+	if (v1->rows != v2->rows) return -3;
+
+	*prod = 0;
+	int i;
+	for (i = 1; i <= v1->rows; i++)
+		*prod += ELEM(v1, i, 1) * ELEM(v2, i, 1);
+	return 0;
+}
+
+int identity(matrix * m) {
+	if (!m || m->rows != m->cols) return -1;
+	int row, col;
+	for (col = 1; col <= m->cols; col++)
+		for (row = 1; row <= m->rows; row++)
+			if (row == col)
+				ELEM(m, row, col) = 1;
+			else
+				ELEM(m, row, col) = 0;
+	return 0;
+}
+
+int isSquare(matrix * mtx) {
+	return mtx && mtx->rows == mtx->cols;
+}
+
+int isDiagonal(matrix * mtx) {
+	if (!isSquare(mtx)) return 0;
+	int row, col;
+	for (col = 1; col <= mtx->cols; col++)
+		for (row = 1; row <= mtx->rows; row++)
+			// if the element is not on the diagonal and not 0
+			if (row != col && ELEM(mtx, row, col) != 0)
+				// then the matrix is not diagonal
+				return 0;
+	return 1;
+}
+
+int isUpperTriangular(matrix * mtx) {
+	if (!isSquare(mtx)) return 0;
+	int row, col;
+	// looks at positions below the diagonal
+	for (col = 1; col <= mtx->cols; col++)
+		for (row = col+1; row <= mtx->rows; row++)
+			if (ELEM(mtx, row, col) != 0)
+				return 0;
+	return 1;
+}
+
+int diagonal(matrix * v, matrix * mtx) {
+	if (!v || !mtx ||
+		v->cols > 1 || v->rows != mtx->rows ||
+		mtx->cols != mtx->rows)
+		return -1;
+	int row, col;
+	for (col = 1; col <= mtx->cols; col++)
+		for (row = 1; row <= mtx->rows; row++)
+			if (row == col)
+				ELEM(mtx, row, col) = ELEM(v, col, 1);
+			else
+				ELEM(mtx, row, col) = 0;
+	return 0;
+}
