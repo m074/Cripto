@@ -1,10 +1,14 @@
-/* taken from http://theory.stanford.edu/~arbrad/pfe/06/matrix.c */
+/* matrix taken from http://theory.stanford.edu/~arbrad/pfe/06/matrix.c */
 
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
+#include <time.h>
 #include "matrix.h"
+#include "random.h"
+#include "utilities.h"
 
 /* Creates a ``rows by cols'' matrix with all values 0.
  * Returns NULL if rows <= 0 or cols <= 0 and otherwise a
@@ -185,10 +189,10 @@ int product(matrix * mtx1, matrix * mtx2, matrix * prod) {
 	int row, col, k;
 	for (col = 1; col <= mtx2->cols; col++)
 		for (row = 1; row <= mtx1->rows; row++) {
-			__uint8_t val = 0.0;
+			__uint8_t val = 0;
 			for (k = 1; k <= mtx1->cols; k++)
 				val += ELEM(mtx1, row, k) * ELEM(mtx2, k, col);
-			ELEM(prod, row, col) = val;
+			ELEM(prod, row, col) = (uint8_t) modInverse(val);
 		}
 	return 0;
 }
@@ -264,3 +268,151 @@ int diagonal(matrix * v, matrix * mtx) {
 				ELEM(mtx, row, col) = 0;
 	return 0;
 }
+
+static void swap(matrix * mtx, int row1, int row2, int col)
+{
+	for (int i = 0; i < col; i++)
+	{
+		uint8_t temp = ELEM(mtx,row1,i);
+		ELEM(mtx,row1,i) = ELEM(mtx,row2,i);
+		ELEM(mtx,row2,i) = temp;
+	}
+}
+
+int rankOfMatrix(matrix * mtx)
+{
+	int rank = mtx->cols;
+	int R = mtx->rows;
+
+	for (int row = 1; row <= rank; row++) {
+        __uint8_t elem = ELEM(mtx,row,row);
+        if (elem != 0) {
+            for (int col = 1; col <= R; col++) {
+                if (col != row) {
+                    double mult = (double) ELEM(mtx,col,row) / ELEM(mtx,row,row);
+                    for (int i = 1; i <= rank; i++){
+                        ELEM(mtx,col,i) -= mult * ELEM(mtx,row,i);
+                    }
+                }
+            }
+        } else {
+            bool reduce = true;
+            for (int i = row + 1; i <= R;  i++) {
+                if (ELEM(mtx,i,row)) {
+                    swap(mtx, row, i, rank);
+                    reduce = false;
+                    break ;
+                }
+            }
+            if (reduce) {
+                rank--;
+                for (int i = 1; i <= R; i ++) {
+                    ELEM(mtx, i, row) = ELEM(mtx, i, rank);
+                }
+            }
+            row--;
+        }
+    }
+	return rank;
+}
+
+bool invertible(matrix * mtx) {
+    int i;
+    for(i = 1; i <= mtx->cols; i++){
+        if(ELEM(mtx,i,i) == 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
+void getCofactor(matrix * mat, matrix * temp, int p, int q, int n)
+{
+    int i = 1, j = 1;
+
+    // Looping for each element of the matrix
+    for (int row = 1; row <= n; row++)
+    {
+        for (int col = 1; col <= n; col++)
+        {
+            //  Copying into temporary matrix only those element
+            //  which are not in given row and column
+            if (row != p && col != q)
+            {
+                ELEM(temp,i,j) = ELEM(mat,row,col);
+//                printf("Elemento %d\n", ELEM(temp,i,j));
+                j++;
+                // Row is filled, so increase row index and
+                // reset col index
+                if (j == n)
+                {
+                    j = 1;
+                    i++;
+                }
+            }
+        }
+    }
+}
+
+int determinantOfMatrix(matrix * mat, int n)
+{
+    int D = 0; // Initialize result
+
+    //  Base case : if matrix contains single element
+    if (n == 1)
+        return ELEM(mat,1,1);
+
+    matrix * temp = newMatrix(n,n); // To store cofactors
+
+    int sign = 1;  // To store sign multiplier
+
+    // Iterate for each element of first row
+    for (int f = 1; f <= n; f++)
+    {
+        // Getting Cofactor of mat[0][f]
+        getCofactor(mat, temp, 0, f, n);
+        int aux = sign * ELEM(mat,1,f) * determinantOfMatrix(temp, n - 1);
+        D += modInverse(aux);
+
+        // terms are to be added with alternate sign
+        sign = -sign;
+    }
+    printf("D %d\n", D);
+    return D;
+}
+
+void multiplyByScalar(matrix * mtx, uint8_t scalar){
+    int i,j;
+    for(i = 1; i <= mtx->rows; i++){
+        for(j = 1; j <= mtx->cols; j++){
+            ELEM(mtx,i,j) = modInverse(scalar * ELEM(mtx,i,j));
+        }
+    }
+}
+
+matrix * inverse(matrix * mtx){
+    matrix * inverse = copyMatrix(mtx);
+    uint8_t det = determinantOfMatrix(inverse, inverse->rows);
+    multiplyByScalar(inverse, det);
+    return inverse;
+}
+
+
+
+matrix * newMatrixA(int n, int k) {
+    int i, j;
+    matrix * mtx = newMatrix(n, k);
+    setSeed(time(0));
+    do {
+        for(i = 1; i <= n; i++)
+            for(j = 1; j <= k; j++){
+            setElement(mtx, i,j, nextChar());
+        }
+    } while(rankOfMatrix(mtx) != k && invertible(mtx));
+    return mtx;
+}
+
+//matrix * newMatrixS(matrix * A) {
+//    matrix * At;
+//    transpose(A, At);
+//}

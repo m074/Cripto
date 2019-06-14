@@ -45,5 +45,16 @@ int isUpperTriangular(matrix * mtx);
 
 int diagonal(matrix * v, matrix * mtx);
 
+int rankOfMatrix(matrix * mtx);
+
+matrix * newMatrixA(int n, int k);
+
+bool invertible(matrix * mtx);
+
+matrix * inverse(matrix * mtx);
+
+int determinantOfMatrix(matrix * mat, int n);
+
+matrix * inverse(matrix * mtx);
 
 #endif //CRIPTO_MATRIX_H
