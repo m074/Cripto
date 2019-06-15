@@ -5,6 +5,9 @@
 #ifndef CRIPTO_MATRIX_H
 #define CRIPTO_MATRIX_H
 
+#include <stdbool.h>
+
+
 typedef struct {
     int rows;
     int cols;

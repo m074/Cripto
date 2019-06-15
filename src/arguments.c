@@ -5,6 +5,7 @@
 #include "general.h"
 
 
+
 //-d o bien –r
 // -s imagenSecreta
 // -m imagenMarca
@@ -37,14 +38,34 @@
 void help();
 
 
+
 Configuration* parse_options(int argc, char *argv[]){
     Configuration* cfg=malloc(sizeof(Configuration));
+    memset(cfg,0, sizeof(Configuration));
     int c;
-    while ((c = getopt (argc, argv, "hi:d:r:s:m:k:n")) != -1){
+
+    static struct option long_options[] = {
+            {"secret",    required_argument, 0,  's' },
+            {"dir",       required_argument, 0,  'i' },
+            {"d",         no_argument,       0,  'd' },
+            {"r",         no_argument,       0,  'r' },
+            {"k",         required_argument, 0,  'k' },
+            {"n",         required_argument, 0,  'n' },
+            {"s",         required_argument, 0,  's' },
+            {"m",         required_argument, 0,  'm' },
+            {0,           0,                 0,  0   }
+    };
+
+    int long_index =0;
+
+    while ((c = getopt_long_only(argc, argv,"", long_options, &long_index )) != -1) {
         switch (c){
-//            case 0:
-//                printf("ASDADSASDAS");
-//                break;
+            case 0:
+                printf("Hew dude\n");
+                break;
+            case 'i':
+                cfg->dir = optarg;
+                break;
             case 'd':
                 cfg->d_mode = 1;
                 break;

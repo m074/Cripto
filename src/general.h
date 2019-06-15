@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/param.h>
-
+#include "matrix.h"
 
 
 #define WIDTH_HEADER_OFFSET 0x12
@@ -49,6 +49,7 @@ typedef struct conf_t
     int r_mode;
     char* s_image_name;
     char* m_image_name;
+    char* dir;
     int number_k;
     int number_n;
 } Configuration;
@@ -65,6 +66,12 @@ void free_bbuffer(BBuffer* bb);
 
 Img* read_bmp(char* filename);
 
+Img** read_images_from_dir(char * directory, int n);
 
+matrix* getSmatrix(Img* img, int number,int size);
+
+u_int8_t get_bits(Img* img,u_int32_t pos, int bits);
+
+void set_bits(Img* img,u_int32_t pos, u_int8_t value, int bits);
 
 #endif //CRIPTO_GENERAL_H
