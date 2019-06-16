@@ -25,7 +25,7 @@ matrix * newMatrix(int rows, int cols) {
 	m->cols = cols;
 
 	// allocate a double array of length rows * cols
-	m->data = (__uint8_t *) malloc(rows*cols*sizeof(double));
+	m->data = (int32_t *) malloc(rows*cols*sizeof(int64_t)); //TODO SACR MEMORY LEAKS
 	// set all data to 0
 	int i;
 	for (i = 0; i < rows*cols; i++)
@@ -60,7 +60,7 @@ matrix * copyMatrix(matrix * mtx) {
 
 	// copy mtx's data to cp's data
 	memcpy(cp->data, mtx->data,
-		   mtx->rows * mtx->cols * sizeof(double));
+		   mtx->rows * mtx->cols * sizeof(int32_t));
 
 	return cp;
 }
@@ -69,7 +69,7 @@ matrix * copyMatrix(matrix * mtx) {
  * successful, -1 if mtx is NULL, and -2 if row or col are
  * outside of the dimensions of mtx.
  */
-int setElement(matrix * mtx, int row, int col, __uint8_t val)
+int setElement(matrix * mtx, int row, int col, int32_t val)
 {
 	if (!mtx) return -1;
 	assert (mtx->data);
@@ -86,8 +86,7 @@ int setElement(matrix * mtx, int row, int col, __uint8_t val)
  * mtx or val is NULL, and -2 if row or col are outside of
  * the dimensions of mtx.
  */
-int getElement(matrix * mtx, int row, int col,
-			   double * val) {
+int getElement(matrix * mtx, int row, int col, int32_t * val) {
 	if (!mtx || !val) return -1;
 	assert (mtx->data);
 	if (row <= 0 || row > mtx->rows ||
@@ -189,10 +188,10 @@ int product(matrix * mtx1, matrix * mtx2, matrix * prod) {
 	int row, col, k;
 	for (col = 1; col <= mtx2->cols; col++)
 		for (row = 1; row <= mtx1->rows; row++) {
-			__uint8_t val = 0;
+            int32_t val = 0;
 			for (k = 1; k <= mtx1->cols; k++)
 				val += ELEM(mtx1, row, k) * ELEM(mtx2, k, col);
-			ELEM(prod, row, col) = (uint8_t) modInverse(val);
+			ELEM(prod, row, col) = (int32_t) modInverse(val);
 		}
 	return 0;
 }
@@ -203,7 +202,7 @@ int product(matrix * mtx1, matrix * mtx2, matrix * prod) {
  * vector, and -3 if the vectors are of incompatible
  * dimensions.
  */
-int dotProduct(matrix * v1, matrix * v2, double * prod) {
+int dotProduct(matrix * v1, matrix * v2, int32_t * prod) {
 	if (!v1 || !v2 || !prod) return -1;
 	if (v1->cols != 1 || v2->cols != 1) return -2;
 	if (v1->rows != v2->rows) return -3;
@@ -273,23 +272,24 @@ static void swap(matrix * mtx, int row1, int row2, int col)
 {
 	for (int i = 0; i < col; i++)
 	{
-		uint8_t temp = ELEM(mtx,row1,i);
+        int32_t temp = ELEM(mtx,row1,i);
 		ELEM(mtx,row1,i) = ELEM(mtx,row2,i);
 		ELEM(mtx,row2,i) = temp;
 	}
 }
 
+//TODO REMOVE! MEMORY LEAKS EVERYWHERE
 int rankOfMatrix(matrix * mtx)
 {
 	int rank = mtx->cols;
 	int R = mtx->rows;
 
 	for (int row = 1; row <= rank; row++) {
-        __uint8_t elem = ELEM(mtx,row,row);
+        int32_t elem = ELEM(mtx,row,row);
         if (elem != 0) {
             for (int col = 1; col <= R; col++) {
                 if (col != row) {
-                    double mult = (double) ELEM(mtx,col,row) / ELEM(mtx,row,row);
+                    int32_t mult = (int32_t) ELEM(mtx,col,row) / ELEM(mtx,row,row);
                     for (int i = 1; i <= rank; i++){
                         ELEM(mtx,col,i) -= mult * ELEM(mtx,row,i);
                     }
@@ -377,11 +377,11 @@ int determinantOfMatrix(matrix * mat, int n)
         // terms are to be added with alternate sign
         sign = -sign;
     }
-    printf("D %d\n", D);
+//    printf("D %d\n", D);
     return D;
 }
 
-void multiplyByScalar(matrix * mtx, uint8_t scalar){
+void multiplyByScalar(matrix * mtx, int32_t scalar){
     int i,j;
     for(i = 1; i <= mtx->rows; i++){
         for(j = 1; j <= mtx->cols; j++){
@@ -392,7 +392,7 @@ void multiplyByScalar(matrix * mtx, uint8_t scalar){
 
 matrix * inverse(matrix * mtx){
     matrix * inverse = copyMatrix(mtx);
-    uint8_t det = determinantOfMatrix(inverse, inverse->rows);
+    int32_t det = determinantOfMatrix(inverse, inverse->rows);
     multiplyByScalar(inverse, det);
     return inverse;
 }

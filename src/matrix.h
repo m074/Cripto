@@ -6,12 +6,13 @@
 #define CRIPTO_MATRIX_H
 
 #include <stdbool.h>
+#include <stdint.h>
 
 
 typedef struct {
     int rows;
     int cols;
-    __uint8_t * data;
+    int32_t * data;
 } matrix;
 
 matrix * newMatrix(int rows, int cols);
@@ -20,9 +21,9 @@ int deleteMatrix(matrix * mtx);
 
 matrix * copyMatrix(matrix * mtx);
 
-int setElement(matrix * mtx, int row, int col, __uint8_t val);
+int setElement(matrix * mtx, int row, int col, int32_t val);
 
-int getElement(matrix * mtx, int row, int col, double * val);
+int getElement(matrix * mtx, int row, int col, int32_t * val);
 
 int nRows(matrix * mtx, int * n);
 
@@ -36,7 +37,7 @@ int sum(matrix * mtx1, matrix * mtx2, matrix * sum);
 
 int product(matrix * mtx1, matrix * mtx2, matrix * prod);
 
-int dotProduct(matrix * v1, matrix * v2, double * prod);
+int dotProduct(matrix * v1, matrix * v2, int32_t * prod);
 
 int identity(matrix * m);
 
