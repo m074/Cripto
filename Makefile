@@ -5,9 +5,5 @@ FLAGS= --std=c99 -pedantic -pedantic-errors -Wall -Wextra -Werror -Wno-unused-pa
 all:
 	gcc -o $(OUTPUT_FILE) src/*.c  $(LIBRARIES) $(FLAGS)
 
-pruebita:
-	gcc -o $(OUTPUT_FILE) src/pruebita.c src/matrix.c src/random.c $(LIBRARIES) $(FLAGS)
-
-
 clean:
 	rm -f $(OUTPUT_FILE)
