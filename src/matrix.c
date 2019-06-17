@@ -409,12 +409,10 @@ int32_t determinant(matrix * a) {
 }
 
 matrix * inverse(matrix * a) {
-    printMatrix(a);
-    printf("\n");
     matrix * ans = newMatrix(a->rows, a->cols);
     matrix * subMatrix = newMatrix(a->rows-1, a->cols-1);
     int i,j, i2, j2, cols, rows, sign;
-    cols = rows = sign = 1;
+    cols = rows = 1;
     for(i = 1; i <= a->rows; i++)
         for(j = 1; j <= a->cols; j++){
             for(i2 = 1; i2 <= a->rows; i2++) {
