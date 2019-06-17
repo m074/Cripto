@@ -372,7 +372,9 @@ matrix * newMatrixA(int n, int k) {
             for(j = 1; j <= k; j++){
             setElement(mtx, i,j, nextChar());
         }
+
     } while(rankOfMatrix(mtx) != k && invertible(mtx));
+    normalize(mtx);
     return mtx;
 }
 
@@ -406,6 +408,8 @@ int32_t determinant(matrix * a) {
         int d4 = ELEM(a,1,2);
         det = d1 * d2 - d3 * d4 ;// the recursion series
     }
+
+
         // recursion continues, solve next sub-matrix
     else {                             // solve the next minor by building a
         matrix * aux = newMatrix(n-1, n-1);
@@ -502,3 +506,40 @@ matrix * newMatrixR(matrix * s, matrix * sCalculated) {
 
 
 
+matrix** getVectorsX(int size, int quantity){
+    matrix** tor=malloc(sizeof(matrix**)*quantity);
+    matrix* m = newMatrixA(quantity,size);
+    printMatrix(m);
+    for(int r=0;r<quantity;r++){
+        tor[r]=malloc(sizeof(matrix*));
+        tor[r]=newMatrix(size,1);
+        for(int j=1;j<=size;j++){
+            ELEM(tor[r],j,1)=ELEM(m,r+1,j);
+        }
+    }
+    return tor;
+}
+
+matrix** getVectorsV(matrix* ma, matrix** xv, int quantity){
+    matrix** tor = malloc(sizeof(matrix**)*quantity);
+    for(int r=0;r<quantity;r++){
+        tor[r]=malloc(sizeof(matrix*));
+        tor[r]=newMatrix(ma->rows,1);
+        product(ma,xv[r],tor[r]);
+    }
+    return tor;
+
+
+    return tor;
+}
+
+//void normalize(matrix* m){
+//    for(int i=1;i<=m->rows;i++){
+//        for(int j=1;j<=m->cols; j++){
+//            if(ELEM(m,i,j)<0){
+//                ELEM(m,i,j)=ELEM(m,i,j)+251;
+//            }
+//            ELEM(m,i,j)=ELEM(m,i,j)%251;
+//        }
+//    }
+//}

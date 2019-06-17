@@ -29,7 +29,6 @@
 //    exit(EXIT_SUCCESS);
 //}
 
-
 int main(int argc, char *argv[]){
     matrix* a=newMatrixA(4,2);
     setElement(a,1,1,3);

@@ -97,6 +97,21 @@ Configuration* parse_options(int argc, char *argv[]){
     return cfg;
 }
 
+void select_mode(Configuration* cfg){
+    if(cfg->number_n==0 || cfg->m_image_name==0){
+        exit(EXIT_FAILURE);
+    }
+    if(cfg->d_mode){ //DISTRIBUTE MODE
+
+    }else if(cfg->r_mode){ //RECOVER MODE
+
+    }
+
+}
+
+void distribute(Configuration cfg);
+void recover(Configuration cfg);
+
 void help() {
     printf("La ayuda...\n");
 }

@@ -6,6 +6,8 @@
 #define CRIPTO_UTILITIES_H
 
 #include <stdlib.h>
+#include <stdint.h>
+
 typedef unsigned char byte;
 typedef struct tagImage{
     short first_2_byte;
