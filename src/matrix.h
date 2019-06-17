@@ -15,6 +15,11 @@ typedef struct {
     int32_t * data;
 } matrix;
 
+typedef struct {
+    int size;
+    matrix ** matrixes;
+} matrixCol;
+
 matrix * newMatrix(int rows, int cols);
 
 int deleteMatrix(matrix * mtx);
@@ -67,6 +72,10 @@ matrix** getVectorsX(int size, int quantity);
 matrix** getVectorsV(matrix* ma, matrix** xv, int quantity);
 
 void normalize(matrix* m);
+
+matrixCol * generateAllMatrixG(int size, int32_t * c, matrix * r);
+
+matrixCol * newMatrixCol(int size);
 
 
 

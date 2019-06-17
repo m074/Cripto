@@ -26,13 +26,32 @@ matrix * newMatrix(int rows, int cols) {
 	m->cols = cols;
 
 	// allocate a double array of length rows * cols
-	m->data = (int32_t *) malloc((rows)*(cols)*sizeof(int32_t)); //TODO SACR MEMORY LEAKS
+	m->data = (int32_t *) malloc((rows)*(cols)*sizeof(int32_t));
 	// set all data to 0
 	int i;
 	for (i = 0; i < rows*cols; i++)
 		m->data[i] = 0;
 
 	return m;
+}
+
+/* Creates a ``rows by cols'' matrix with all values 0.
+ * Returns NULL if rows <= 0 or cols <= 0 and otherwise a
+ * pointer to the new matrix.
+ */
+matrixCol * newMatrixCol(int size) {
+    if (size <= 0) return NULL;
+
+    // allocate a matrix structure
+    matrixCol * mC = (matrixCol *) malloc(sizeof(matrixCol));
+
+    // set dimensions
+    mC->size = size;
+
+    // allocate a double array of length rows * cols
+    mC->matrixes = (matrix **) malloc(size*sizeof(matrix *));
+
+    return mC;
 }
 
 /* Deletes a matrix.  Returns 0 if successful and -1 if mtx
@@ -531,6 +550,26 @@ matrix** getVectorsV(matrix* ma, matrix** xv, int quantity){
 
 
     return tor;
+}
+
+matrix * newMatrixG(matrix * r, int32_t c){
+    int i;
+    matrix * g = newMatrix(r->rows, r->cols / 2);
+    for(i = 1; i <= g->rows; i++) {
+        // TODO ver que hacer cuando cols es 4
+        ELEM(g, i, 1) = ELEM(r,i,1) + ELEM(r, i, 2) * c;
+        ELEM(g, i, 2) = ELEM(r,i,3) + ELEM(r, i, 4) * c;
+    }
+    return g;
+}
+
+matrixCol * generateAllMatrixG(int size, int32_t * c, matrix * r) {
+    int i;
+    matrixCol * mc = newMatrixCol(size);
+    for(i = 0; i < size; i++){
+        mc->matrixes[i] = newMatrixG(r, c[i]);
+    }
+    return mc;
 }
 
 //void normalize(matrix* m){
