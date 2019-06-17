@@ -59,6 +59,9 @@ matrix * inverse(matrix * mtx);
 
 int32_t determinant(matrix * a);
 
+matrix * newMatrixS(matrix * a);
+
+matrix * newMatrixR(matrix * s, matrix * sCalculated);
 
 
 #endif //CRIPTO_MATRIX_H

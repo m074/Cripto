@@ -179,6 +179,27 @@ int sum(matrix * mtx1, matrix * mtx2, matrix * sum) {
 	return 0;
 }
 
+/* Writes the substraction of matrices mtx1 and mtx2 into matrix
+ * sum. Returns 0 if successful, -1 if any of the matrices
+ * are NULL, and -2 if the dimensions of the matrices are
+ * incompatible.
+ */
+int substract(matrix * mtx1, matrix * mtx2, matrix * substract) {
+    if (!mtx1 || !mtx2 || !substract) return -1;
+    if (mtx1->rows != mtx2->rows ||
+        mtx1->rows != substract->rows ||
+        mtx1->cols != mtx2->cols ||
+        mtx1->cols != substract->cols)
+        return -2;
+
+    int row, col;
+    for (col = 1; col <= mtx1->cols; col++)
+        for (row = 1; row <= mtx1->rows; row++)
+            ELEM(substract, row, col) =
+                    ELEM(mtx1, row, col) - ELEM(mtx2, row, col);
+    return 0;
+}
+
 /* Writes the product of matrices mtx1 and mtx2 into matrix
  * prod.  Returns 0 if successful, -1 if any of the
  * matrices are NULL, and -2 if the dimensions of the
@@ -197,7 +218,7 @@ int product(matrix * mtx1, matrix * mtx2, matrix * prod) {
             int32_t val = 0;
 			for (k = 1; k <= mtx1->cols; k++)
 				val += ELEM(mtx1, row, k) * ELEM(mtx2, k, col);
-			ELEM(prod, row, col) = (int32_t) modInverse(val);
+			ELEM(prod, row, col) = val;
 		}
 	return 0;
 }
@@ -355,10 +376,16 @@ matrix * newMatrixA(int n, int k) {
     return mtx;
 }
 
-//matrix * newMatrixS(matrix * A) {
-//    matrix * At;
-//    transpose(A, At);
-//}
+void normalize(matrix * m){
+    int i,j;
+    for(i = 1; i <= m->rows; i++)
+        for(j = 1; j <= m->cols; j++){
+            while(ELEM(m,i,j) < 0){
+                ELEM(m, i, j) = ELEM(m,i,j) + 251;
+            }
+            ELEM(m,i,j) = ELEM(m,i,j) % 251;
+        }
+}
 
 int32_t determinant(matrix * a) {
     int det = 0 ;                   // init determinant
@@ -379,8 +406,6 @@ int32_t determinant(matrix * a) {
         int d4 = ELEM(a,1,2);
         det = d1 * d2 - d3 * d4 ;// the recursion series
     }
-
-
         // recursion continues, solve next sub-matrix
     else {                             // solve the next minor by building a
         matrix * aux = newMatrix(n-1, n-1);
@@ -438,13 +463,42 @@ matrix * inverse(matrix * a) {
         scalar = multiplicativeInverse(scalar);
     }
     multiplyByScalar(t, scalar);
-    for(i = 1; i <= t->rows; i++)
-        for(j = 1; j <= t->cols; j++){
-        while(ELEM(t,i,j) < 0){
-            ELEM(t, i, j) = ELEM(t,i,j) + 251;
-        }
-        ELEM(t,i,j) = ELEM(t,i,j) % 251;
-    }
+    normalize(t);
     return t;
 }
+
+matrix * newMatrixS(matrix * a) {
+    //Define aux matrices
+    matrix * at, * ata, *ataInv, * aataInv, * aataInvat;
+    at = newMatrix(a->cols, a->rows);
+    transpose(a, at);
+    ata = newMatrix(at->rows, a->cols);
+    product(at, a, ata);
+    ataInv = inverse(ata);
+
+    aataInv = newMatrix(a->rows, ataInv->cols);
+    product(a, ataInv, aataInv);
+
+    aataInvat = newMatrix(aataInv->rows, at->cols);
+    product(aataInv, at, aataInvat);
+
+    deleteMatrix(at);
+    deleteMatrix(ata);
+    deleteMatrix(ataInv);
+    deleteMatrix(aataInv);
+
+    normalize(aataInvat);
+
+    return aataInvat;
+}
+
+matrix * newMatrixR(matrix * s, matrix * sCalculated) {
+    matrix * r = newMatrix(s->rows, s->cols);
+    substract(s,sCalculated, r);
+    normalize(r);
+    return r;
+}
+
+
+
 

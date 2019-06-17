@@ -4,6 +4,8 @@
 #include <string.h>
 #include "general.h"
 #include "matrix.h"
+#include "utilities.h"
+#include <math.h>
 
 //
 //int main(int argc, char *argv[]){
@@ -27,42 +29,46 @@
 //    exit(EXIT_SUCCESS);
 //}
 
+
 int main(int argc, char *argv[]){
     matrix* a=newMatrixA(4,2);
     setElement(a,1,1,3);
     setElement(a,1,2,7);
+
     setElement(a,2,1,6);
     setElement(a,2,2,1);
+
     setElement(a,3,1,2);
     setElement(a,3,2,5);
+
     setElement(a,4,1,6);
     setElement(a,4,2,6);
 
-    matrix* at=newMatrixA(2,4);
-    matrix* alfa=newMatrixA(4,4);
+    matrix * letS = newMatrix(4,4);
+    setElement(letS,1,1,2);
+    setElement(letS,1,2,5);
+    setElement(letS,1,3,2);
+    setElement(letS,1,4,3);
 
+    setElement(letS,2,1,3);
+    setElement(letS,2,2,6);
+    setElement(letS,2,3,4);
+    setElement(letS,2,4,5);
 
-    transpose(a,at);
+    setElement(letS,3,1,4);
+    setElement(letS,3,2,7);
+    setElement(letS,3,3,4);
+    setElement(letS,3,4,6);
 
-    product(a,at,alfa);
+    setElement(letS,4,1,1);
+    setElement(letS,4,2,4);
+    setElement(letS,4,3,1);
+    setElement(letS,4,4,7);
 
-    printMatrix(alfa);
-
-//    matrix* inv=newMatrixA(4,4);
-//    inv=inverse(alfa);
-//    printMatrix(inv);
-//    matrix* final=newMatrixA(4,4);
-//    matrix* cache=newMatrixA(4,4);
-//
-
-//
-//    product(a,inv,cache);
-//
-//    product(cache,at,final);
-//
-//    printMatrix(inv);
-
-
+    matrix * s = newMatrixS(a);
+    matrix * r = newMatrixR(letS, s);
+    printMatrix(r);
 
     exit(EXIT_SUCCESS);
 }
+
