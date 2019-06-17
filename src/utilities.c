@@ -22,7 +22,7 @@ int modInverse(int i) {
     return inverses[i - 1];
 }
 
-int multiplicativeInverse(int a)
+int32_t multiplicativeInverse(int a)
 {
     int b = 251;
     int t, nt, r, nr, q, tmp;

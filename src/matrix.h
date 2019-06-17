@@ -57,8 +57,8 @@ bool invertible(matrix * mtx);
 
 matrix * inverse(matrix * mtx);
 
-int determinantOfMatrix(matrix * mat, int n);
+int32_t determinant(matrix * a);
 
-matrix * inverse(matrix * mtx);
+
 
 #endif //CRIPTO_MATRIX_H

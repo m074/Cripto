@@ -9,6 +9,7 @@
 #include "matrix.h"
 #include "random.h"
 #include "utilities.h"
+#include <math.h>
 
 /* Creates a ``rows by cols'' matrix with all values 0.
  * Returns NULL if rows <= 0 or cols <= 0 and otherwise a
@@ -25,7 +26,7 @@ matrix * newMatrix(int rows, int cols) {
 	m->cols = cols;
 
 	// allocate a double array of length rows * cols
-	m->data = (int32_t *) malloc(rows*cols*sizeof(int64_t)); //TODO SACR MEMORY LEAKS
+	m->data = (int32_t *) malloc((rows)*(cols)*sizeof(int32_t)); //TODO SACR MEMORY LEAKS
 	// set all data to 0
 	int i;
 	for (i = 0; i < rows*cols; i++)
@@ -49,6 +50,11 @@ int deleteMatrix(matrix * mtx) {
 
 #define ELEM(mtx, row, col) \
   mtx->data[(col-1) * mtx->rows + (row-1)]
+
+
+#define ELEMFROMARRAY(mtx, row, col, dim) \
+  mtx[(col) * dim + (row)]
+
 
 /* Copies a matrix.  Returns NULL if mtx is NULL.
  */
@@ -284,14 +290,14 @@ int rankOfMatrix(matrix * mtx)
 	int rank = mtx->cols;
 	int R = mtx->rows;
 
-	for (int row = 1; row <= rank; row++) {
+	for (int row = 1; row <= rank && row <= R; row++) {
         int32_t elem = ELEM(mtx,row,row);
         if (elem != 0) {
             for (int col = 1; col <= R; col++) {
                 if (col != row) {
-                    int32_t mult = (int32_t) ELEM(mtx,col,row) / ELEM(mtx,row,row);
+//                    int32_t mult = (int32_t) ELEM(mtx,col,row) / ELEM(mtx,row,row);
                     for (int i = 1; i <= rank; i++){
-                        ELEM(mtx,col,i) -= mult * ELEM(mtx,row,i);
+                        ELEM(mtx,col,i) -= ELEM(mtx,row,i);
                     }
                 }
             }
@@ -326,78 +332,15 @@ bool invertible(matrix * mtx) {
     return true;
 }
 
-void getCofactor(matrix * mat, matrix * temp, int p, int q, int n)
-{
-    int i = 1, j = 1;
-
-    // Looping for each element of the matrix
-    for (int row = 1; row <= n; row++)
-    {
-        for (int col = 1; col <= n; col++)
-        {
-            //  Copying into temporary matrix only those element
-            //  which are not in given row and column
-            if (row != p && col != q)
-            {
-                ELEM(temp,i,j) = ELEM(mat,row,col);
-//                printf("Elemento %d\n", ELEM(temp,i,j));
-                j++;
-                // Row is filled, so increase row index and
-                // reset col index
-                if (j == n)
-                {
-                    j = 1;
-                    i++;
-                }
-            }
-        }
-    }
-}
-
-int determinantOfMatrix(matrix * mat, int n)
-{
-    int D = 0; // Initialize result
-
-    //  Base case : if matrix contains single element
-    if (n == 1)
-        return ELEM(mat,1,1);
-
-    matrix * temp = newMatrix(n,n); // To store cofactors
-
-    int sign = 1;  // To store sign multiplier
-
-    // Iterate for each element of first row
-    for (int f = 1; f <= n; f++)
-    {
-        // Getting Cofactor of mat[0][f]
-        getCofactor(mat, temp, 0, f, n);
-        int aux = sign * ELEM(mat,1,f) * determinantOfMatrix(temp, n - 1);
-        D += modInverse(aux);
-
-        // terms are to be added with alternate sign
-        sign = -sign;
-    }
-//    printf("D %d\n", D);
-    return D;
-}
-
 void multiplyByScalar(matrix * mtx, int32_t scalar){
     int i,j;
     for(i = 1; i <= mtx->rows; i++){
         for(j = 1; j <= mtx->cols; j++){
-            ELEM(mtx,i,j) = modInverse(scalar * ELEM(mtx,i,j));
+            int32_t elem = scalar * ELEM(mtx,i,j);
+            ELEM(mtx,i,j) = elem;
         }
     }
 }
-
-matrix * inverse(matrix * mtx){
-    matrix * inverse = copyMatrix(mtx);
-    int32_t det = determinantOfMatrix(inverse, inverse->rows);
-    multiplyByScalar(inverse, det);
-    return inverse;
-}
-
-
 
 matrix * newMatrixA(int n, int k) {
     int i, j;
@@ -416,3 +359,94 @@ matrix * newMatrixA(int n, int k) {
 //    matrix * At;
 //    transpose(A, At);
 //}
+
+int32_t determinant(matrix * a) {
+    int det = 0 ;                   // init determinant
+    // square array
+    int n = a->rows;
+
+    if (n < 1)    {   }                // error condition, should never get here
+
+    else if (n == 1) {                 // should not get here
+        det = ELEM(a,1,1);
+    }
+
+    else if (n == 2)  {                // basic 2X2 sub-matrix determinate
+        // definition. When n==2, this ends the
+        int d1 = ELEM(a,1,1);
+        int d2 = ELEM(a,2,2);
+        int d3 = ELEM(a,2,1);
+        int d4 = ELEM(a,1,2);
+        det = d1 * d2 - d3 * d4 ;// the recursion series
+    }
+
+
+        // recursion continues, solve next sub-matrix
+    else {                             // solve the next minor by building a
+        matrix * aux = newMatrix(n-1, n-1);
+        int i, i2, j2, rows, cols;
+        int sign = 1;
+        rows = cols = 1;
+        for(i = 1; i <= a->rows; i++) {
+            for(i2 = 1; i2 <= a->rows; i2++) {
+                for(j2= 2; j2 <= a->cols; j2++) {
+                    if(i != i2 ) {
+                        setElement(aux, rows, cols, ELEM(a,i2,j2));
+                        cols++;
+                    }
+                }
+                if(i != i2){
+                    cols = 1;
+                    rows++;
+                }
+            }
+            rows = 1;
+            det += sign * ELEM(a,i,1) * determinant(aux);
+            sign = -sign;
+        }
+    }
+    return(det);
+}
+
+matrix * inverse(matrix * a) {
+    printMatrix(a);
+    printf("\n");
+    matrix * ans = newMatrix(a->rows, a->cols);
+    matrix * subMatrix = newMatrix(a->rows-1, a->cols-1);
+    int i,j, i2, j2, cols, rows, sign;
+    cols = rows = sign = 1;
+    for(i = 1; i <= a->rows; i++)
+        for(j = 1; j <= a->cols; j++){
+            for(i2 = 1; i2 <= a->rows; i2++) {
+                for(j2= 1; j2 <= a->cols; j2++) {
+                    if(i != i2 && j != j2 ) {
+                        setElement(subMatrix, rows, cols, ELEM(a,i2,j2));
+                        cols++;
+                    }
+                }
+                if(i != i2){
+                    cols = 1;
+                    rows++;
+                }
+            }
+            rows = 1;
+            sign = (i + j) % 2 == 0 ? 1 : -1;
+            setElement(ans, i,j, sign * determinant(subMatrix));
+    }
+    matrix * t = newMatrix(a->rows, a->cols);
+    transpose(ans, t);
+    int32_t scalar = determinant(a);
+    if(scalar > 251 || scalar < 0){
+        scalar = multiplicativeInverse(scalar);
+    }
+    multiplyByScalar(t, scalar);
+    for(i = 1; i <= t->rows; i++)
+        for(j = 1; j <= t->cols; j++){
+        while(ELEM(t,i,j) < 0){
+            ELEM(t, i, j) = ELEM(t,i,j) + 251;
+        }
+        ELEM(t,i,j) = ELEM(t,i,j) % 251;
+    }
+    return t;
+}
+
