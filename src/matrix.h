@@ -78,7 +78,13 @@ matrixCol * generateAllMatrixG(int size, int32_t * c, matrix * r);
 
 matrixCol * newMatrixCol(int size);
 
+matrix * newMatrixB(matrix * sh1, matrix * sh2);
 
+matrix * subMatrix(matrix * m, int col);
+
+matrix * getrsmall(matrixCol * allG, int32_t * c, int x, int y);
+
+matrix * solveEquations(matrix * m, matrix * g);
 
 
 #endif //CRIPTO_MATRIX_H

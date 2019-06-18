@@ -324,7 +324,6 @@ static void swap(matrix * mtx, int row1, int row2, int col)
 	}
 }
 
-//TODO REMOVE! MEMORY LEAKS EVERYWHERE
 int rankOfMatrix(matrix * mtx)
 {
 	int rank = mtx->cols;
@@ -335,7 +334,6 @@ int rankOfMatrix(matrix * mtx)
         if (elem != 0) {
             for (int col = 1; col <= R; col++) {
                 if (col != row) {
-//                    int32_t mult = (int32_t) ELEM(mtx,col,row) / ELEM(mtx,row,row);
                     for (int i = 1; i <= rank; i++){
                         ELEM(mtx,col,i) -= ELEM(mtx,row,i);
                     }
@@ -555,11 +553,15 @@ matrixCol* getVectorsV(matrix* ma, matrix** xv, int quantity){
 
 matrix * newMatrixG(matrix * r, int32_t c){
     int i;
-    matrix * g = newMatrix(r->rows, r->cols / 2);
+    matrix * g = newMatrix(r->rows, 2);
     for(i = 1; i <= g->rows; i++) {
-        // TODO ver que hacer cuando cols es 4
-        ELEM(g, i, 1) = ELEM(r,i,1) + ELEM(r, i, 2) * c;
-        ELEM(g, i, 2) = ELEM(r,i,3) + ELEM(r, i, 4) * c;
+        if(r->cols == 4){
+            ELEM(g, i, 1) = ELEM(r,i,1) + ELEM(r, i, 2) * c;
+            ELEM(g, i, 2) = ELEM(r,i,3) + ELEM(r, i, 4) * c;
+        } else {
+            ELEM(g, i, 1) = ELEM(r,i,1) + ELEM(r, i, 2) * c + ELEM(r,i,3) * c * c + ELEM(r, i, 4) * c * c * c;
+            ELEM(g, i, 2) = ELEM(r,i,5) + ELEM(r, i, 6) * c + ELEM(r,i,7) * c * c + ELEM(r, i, 8) * c * c * c;
+        }
     }
     return g;
 }
@@ -572,4 +574,89 @@ matrixCol * generateAllMatrixG(int size, int32_t * c, matrix * r) {
     }
     return mc;
 }
+
+matrix * newMatrixB(matrix * sh1, matrix * sh2) {
+    int i;
+
+    if(!sh1 || !sh2 || sh1->rows != sh2->rows){
+        return NULL;
+    }
+
+    matrix * b = newMatrix(sh1->rows, 2);
+
+    for(i = 1; i <= sh1->rows; i++){
+        setElement(b, i, 1, ELEM(sh1, i,1));
+        setElement(b, i, 2, ELEM(sh2, i,1));
+    }
+
+    return b;
+}
+
+/*Generates a new submatrix excluding the
+ * col from the matrix passed as
+ * arguments*/
+matrix * subMatrix(matrix * m, int col) {
+    int i, j, i2, j2;
+    i2 = j2 = 1;
+    matrix * subMatrix = newMatrix(m->rows - 1, m->cols - 1);
+
+    if(!m || col <= 0){
+        return NULL;
+    }
+
+    for(i = 1; i <= m->rows; i++) {
+        for(j = 1; j <=m->cols; j++) {
+            if(j != col) {
+                setElement(subMatrix, i2,j2, ELEM(m,i,j));
+                j2++;
+            }
+        }
+        j2 = 1;
+        i2++;
+    }
+
+    return subMatrix;
+}
+
+matrix * getrsmall(matrixCol * allG, int32_t * c, int x, int y) {
+    int i;
+    matrix * cMatrix = newMatrix(allG->size, allG->size);
+    matrix * g = newMatrix(allG->size, 1);
+
+    for(i = 1; i <= g->rows; i++){
+        setElement(g, i, 1, ELEM(allG->matrixes[i],x, y));
+
+        setElement(cMatrix, i, 1, 1);
+        setElement(cMatrix, i, 2, c[i]);
+        if(allG->size == 4) {
+            setElement(cMatrix, i, 3, c[i] * c[i]);
+            setElement(cMatrix, i, 4, c[i] * c[i] * c[i]);
+        }
+    }
+    return solveEquations(cMatrix, g);
+}
+
+matrix * solveEquations(matrix * m, matrix * g) {
+    int i, count;
+    matrix * results = newMatrix(m->rows, 1);
+
+
+    int det = determinant(m);
+    for(count = 1; count <= m->cols; count++) {
+        matrix * copy = copyMatrix(m);
+        for(i = 1; i <= m->rows; i++){
+            ELEM(copy, count, i) = ELEM(g,i,1);
+        }
+        int dx = determinant(copy);
+        deleteMatrix(copy);
+        ELEM(results,count,1)=dx/det;
+    }
+
+    return results;
+}
+
+
+
+
+
 
