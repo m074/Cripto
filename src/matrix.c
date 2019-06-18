@@ -383,15 +383,21 @@ void multiplyByScalar(matrix * mtx, int32_t scalar){
 matrix * newMatrixA(int n, int k) {
     int i, j;
     matrix * mtx = newMatrix(n, k);
+    matrix * prod;
     setSeed(time(0));
     do {
         for(i = 1; i <= n; i++)
             for(j = 1; j <= k; j++){
             setElement(mtx, i,j, nextChar());
         }
-
-    } while(rankOfMatrix(mtx) != k && invertible(mtx));
+        matrix * mtxTransposed = newMatrix(k,n);
+        prod = newMatrix(n,n);
+        transpose(mtx,mtxTransposed);
+        product(mtx,mtxTransposed,prod);
+        
+    } while(rankOfMatrix(mtx) != k && invertible(prod));
     normalize(mtx);
+
     return mtx;
 }
 
