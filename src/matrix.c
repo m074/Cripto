@@ -598,7 +598,7 @@ matrix * newMatrixB(matrix * sh1, matrix * sh2) {
 matrix * subMatrix(matrix * m, int col) {
     int i, j, i2, j2;
     i2 = j2 = 1;
-    matrix * subMatrix = newMatrix(m->rows - 1, m->cols - 1);
+    matrix * subMatrix = newMatrix(m->rows, m->cols - 1);
 
     if(!m || col <= 0){
         return NULL;
@@ -620,15 +620,16 @@ matrix * subMatrix(matrix * m, int col) {
 
 
 matrix* recoverMatrixR(matrixCol* allG, int32_t* c){
-    matrix* mr = newMatrix(allG->matrixes[0]->rows,allG->matrixes[0]->rows);
+    matrix * mr = newMatrix(allG->matrixes[0]->rows,allG->matrixes[0]->rows);
     for(int i=1;i<=mr->rows;i++){
         for(int j=1;j<=2;j++){
-            matrix* rsmall=getrsmall(allG,c,i,j);
-            for(int k=0; k<=rsmall->rows;k++){
-                ELEM(mr,i,rsmall->rows*(j-1)+k)= ELEM(rsmall,k,0);
+            matrix * rsmall = getrsmall(allG,c,i,j);
+            for(int k=1; k<=rsmall->rows;k++){
+                ELEM(mr,i,rsmall->rows*(j-1)+k)= ELEM(rsmall,k,1);
             }
         }
     }
+    normalize(mr);
     return mr;
 }
 
@@ -638,16 +639,21 @@ matrix * getrsmall(matrixCol * allG, int32_t * c, int x, int y) {
     matrix * cMatrix = newMatrix(allG->size, allG->size);
     matrix * g = newMatrix(allG->size, 1);
 
-    for(i = 1; i <= g->rows; i++){
-        setElement(g, i, 1, ELEM(allG->matrixes[i],x, y));
+    for(i = 1; i <= allG->size; i++){
+        setElement(g, i, 1, ELEM(allG->matrixes[i-1],x, y));
 
         setElement(cMatrix, i, 1, 1);
-        setElement(cMatrix, i, 2, c[i]);
+        setElement(cMatrix, i, 2, c[i-1]);
         if(allG->size == 4) {
-            setElement(cMatrix, i, 3, c[i] * c[i]);
-            setElement(cMatrix, i, 4, c[i] * c[i] * c[i]);
+            setElement(cMatrix, i, 3, c[i-1] * c[i-1]);
+            setElement(cMatrix, i, 4, c[i-1] * c[i-1] * c[i-1]);
         }
     }
+
+    printMatrix(cMatrix);
+    printf("\n");
+    printMatrix(g);
+    printf("\nx: %d, y:%d\n", x, y);
     return solveEquations(cMatrix, g);
 }
 

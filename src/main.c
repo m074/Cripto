@@ -30,47 +30,63 @@
 //}
 
 int main(int argc, char *argv[]){
-    matrix* a=newMatrixA(4,2);
-    setElement(a,1,1,3);
-    setElement(a,1,2,7);
+    matrix* sh1=newMatrixA(4,3);
+    setElement(sh1,1,1,62);
+    setElement(sh1,1,2,36);
+    setElement(sh1,1,3,92);
 
-    setElement(a,2,1,6);
-    setElement(a,2,2,1);
+    setElement(sh1,2,1,59);
+    setElement(sh1,2,2,101);
+    setElement(sh1,2,3,58);
 
-    setElement(a,3,1,2);
-    setElement(a,3,2,5);
+    setElement(sh1,3,1,43);
+    setElement(sh1,3,2,126);
+    setElement(sh1,3,3,142);
 
-    setElement(a,4,1,6);
-    setElement(a,4,2,6);
+    setElement(sh1,4,1,84);
+    setElement(sh1,4,2,26);
+    setElement(sh1,41,3,163);
 
-    matrix * letS = newMatrix(4,4);
-    setElement(letS,1,1,2);
-    setElement(letS,1,2,5);
-    setElement(letS,1,3,2);
-    setElement(letS,1,4,3);
+    matrix* sh2=newMatrixA(4,3);
+    setElement(sh2,1,1,40);
+    setElement(sh2,1,2,71);
+    setElement(sh2,1,3,132);
 
-    setElement(letS,2,1,3);
-    setElement(letS,2,2,6);
-    setElement(letS,2,3,4);
-    setElement(letS,2,4,5);
+    setElement(sh2,2,1,28);
+    setElement(sh2,2,2,169);
+    setElement(sh2,2,3,47);
 
-    setElement(letS,3,1,4);
-    setElement(letS,3,2,7);
-    setElement(letS,3,3,4);
-    setElement(letS,3,4,6);
+    setElement(sh2,3,1,28);
+    setElement(sh2,3,2,198);
+    setElement(sh2,3,3,72);
 
-    setElement(letS,4,1,1);
-    setElement(letS,4,2,4);
-    setElement(letS,4,3,1);
-    setElement(letS,4,4,7);
+    setElement(sh2,4,1,48);
+    setElement(sh2,4,2,14);
+    setElement(sh2,41,3,150);
 
-    matrix * s = newMatrixS(a);
-    matrix * r = newMatrixR(letS, s);
-    printMatrix(r);
-    deleteMatrix(a);
-    deleteMatrix(s);
-    deleteMatrix(letS);
-    deleteMatrix(r);
+    printMatrix(sh1);
+    printf("\n");
+    printMatrix(sh2);
+    printf("\n");
+    matrix * b = newMatrixB(sh1,sh2);
+    printMatrix(b);
+    printf("\n");
+    printMatrix(newMatrixS(b));
+    printf("PRINTING G1\n");
+    matrix * G1 = subMatrix(sh1, 1);
+    printMatrix(G1);
+    printf("\n");
+    matrix * G2 = subMatrix(sh2, 1);
+    printMatrix(G2);
+    printf("\n");
+
+    int32_t c[2] = {1,2};
+    matrixCol * mCol = newMatrixCol(2);
+    mCol->matrixes[0] = G1;
+    mCol->matrixes[1] = G2;
+
+    printMatrix(recoverMatrixR(mCol, c));
+
 
     exit(EXIT_SUCCESS);
 }
