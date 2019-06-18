@@ -487,6 +487,10 @@ matrix * inverse(matrix * a) {
     }
     multiplyByScalar(t, scalar);
     normalize(t);
+
+    deleteMatrix(ans);
+    deleteMatrix(subMatrix);
+
     return t;
 }
 
@@ -525,31 +529,28 @@ matrix * newMatrixR(matrix * s, matrix * sCalculated) {
 
 
 
-matrix** getVectorsX(int size, int quantity){
-    matrix** tor=malloc(sizeof(matrix**)*quantity);
+matrixCol* getVectorsX(int size, int quantity){
+    matrixCol *mc=newMatrixCol(quantity);
     matrix* m = newMatrixA(quantity,size);
-    printMatrix(m);
     for(int r=0;r<quantity;r++){
-        tor[r]=malloc(sizeof(matrix*));
-        tor[r]=newMatrix(size,1);
+        mc->matrixes[r]=malloc(sizeof(matrix*));
+        mc->matrixes[r]=newMatrix(size,1);
         for(int j=1;j<=size;j++){
-            ELEM(tor[r],j,1)=ELEM(m,r+1,j);
+            ELEM(mc->matrixes[r],j,1)=ELEM(m,r+1,j);
         }
     }
-    return tor;
+    return mc;
 }
 
-matrix** getVectorsV(matrix* ma, matrix** xv, int quantity){
-    matrix** tor = malloc(sizeof(matrix**)*quantity);
+matrixCol* getVectorsV(matrix* ma, matrix** xv, int quantity){
+    matrixCol *mc=newMatrixCol(quantity);
     for(int r=0;r<quantity;r++){
-        tor[r]=malloc(sizeof(matrix*));
-        tor[r]=newMatrix(ma->rows,1);
-        product(ma,xv[r],tor[r]);
+        mc->matrixes[r]=malloc(sizeof(matrix*));
+        mc->matrixes[r]=newMatrix(ma->rows,1);
+        product(ma,xv[r],mc->matrixes[r]);
     }
-    return tor;
 
-
-    return tor;
+    return mc;
 }
 
 matrix * newMatrixG(matrix * r, int32_t c){
@@ -572,13 +573,3 @@ matrixCol * generateAllMatrixG(int size, int32_t * c, matrix * r) {
     return mc;
 }
 
-//void normalize(matrix* m){
-//    for(int i=1;i<=m->rows;i++){
-//        for(int j=1;j<=m->cols; j++){
-//            if(ELEM(m,i,j)<0){
-//                ELEM(m,i,j)=ELEM(m,i,j)+251;
-//            }
-//            ELEM(m,i,j)=ELEM(m,i,j)%251;
-//        }
-//    }
-//}

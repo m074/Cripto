@@ -67,9 +67,10 @@ int32_t determinant(matrix * a);
 matrix * newMatrixS(matrix * a);
 
 matrix * newMatrixR(matrix * s, matrix * sCalculated);
-matrix** getVectorsX(int size, int quantity);
 
-matrix** getVectorsV(matrix* ma, matrix** xv, int quantity);
+matrixCol* getVectorsX(int size, int quantity);
+
+matrixCol* getVectorsV(matrix* ma, matrix** xv, int quantity);
 
 void normalize(matrix* m);
 

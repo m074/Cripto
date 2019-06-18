@@ -67,6 +67,10 @@ int main(int argc, char *argv[]){
     matrix * s = newMatrixS(a);
     matrix * r = newMatrixR(letS, s);
     printMatrix(r);
+    deleteMatrix(a);
+    deleteMatrix(s);
+    deleteMatrix(letS);
+    deleteMatrix(r);
 
     exit(EXIT_SUCCESS);
 }
