@@ -88,5 +88,11 @@ matrix * solveEquations(matrix * m, matrix * g);
 
 matrix* recoverMatrixR(matrixCol* allG, int32_t* c);
 
+matrix * newMatrixRW(matrix * w, matrix * doubleS);
+
+matrix * newMatrixSh(matrix * v, matrix * g);
+
+matrix * newSecretMatrixS(matrix * doubleS, matrix * r);
+
 
 #endif //CRIPTO_MATRIX_H

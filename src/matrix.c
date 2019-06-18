@@ -394,7 +394,7 @@ matrix * newMatrixA(int n, int k) {
         prod = newMatrix(n,n);
         transpose(mtx,mtxTransposed);
         product(mtx,mtxTransposed,prod);
-        
+
     } while(rankOfMatrix(mtx) != k && invertible(prod));
     normalize(mtx);
 
@@ -679,6 +679,32 @@ matrix * solveEquations(matrix * m, matrix * g) {
         ELEM(results,count,1)=dx/det;
     }
 
+    return results;
+}
+
+matrix * newMatrixRW(matrix * w, matrix * doubleS) {
+    matrix * results = newMatrix(w->rows, w->cols);
+    substract(w, doubleS, results);
+    normalize(results);
+    return results;
+}
+
+matrix * newMatrixSh(matrix * v, matrix * g) {
+    int i, j;
+    matrix * results = newMatrix(g->rows, g->cols + 1);
+    for(i = 1; i <= results->rows; i++) {
+        ELEM(results, i, 1) = ELEM(v, i, 1);
+        for(j = 2; j <= results->cols; j++) {
+            ELEM(results,i,j) = ELEM(g, i, j - 1);
+        }
+    }
+    return results;
+}
+
+matrix * newSecretMatrixS(matrix * doubleS, matrix * r) {
+    matrix * results = newMatrix(doubleS->rows, doubleS->cols);
+    substract(doubleS, r, results);
+    normalize(results);
     return results;
 }
 
