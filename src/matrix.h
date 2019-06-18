@@ -86,5 +86,7 @@ matrix * getrsmall(matrixCol * allG, int32_t * c, int x, int y);
 
 matrix * solveEquations(matrix * m, matrix * g);
 
+matrix* recoverMatrixR(matrixCol* allG, int32_t* c);
+
 
 #endif //CRIPTO_MATRIX_H

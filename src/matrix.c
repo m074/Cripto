@@ -618,6 +618,21 @@ matrix * subMatrix(matrix * m, int col) {
     return subMatrix;
 }
 
+
+matrix* recoverMatrixR(matrixCol* allG, int32_t* c){
+    matrix* mr = newMatrix(allG->matrixes[0]->rows,allG->matrixes[0]->rows);
+    for(int i=1;i<=mr->rows;i++){
+        for(int j=1;j<=2;j++){
+            matrix* rsmall=getrsmall(allG,c,i,j);
+            for(int k=0; k<=rsmall->rows;k++){
+                ELEM(mr,i,rsmall->rows*(j-1)+k)= ELEM(rsmall,k,0);
+            }
+        }
+    }
+    return mr;
+}
+
+
 matrix * getrsmall(matrixCol * allG, int32_t * c, int x, int y) {
     int i;
     matrix * cMatrix = newMatrix(allG->size, allG->size);
