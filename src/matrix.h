@@ -107,4 +107,6 @@ matrix* recoverMatrixS(matrix* mdobles, matrix* mr);
 
 void deleteMatrixCol(matrixCol* mc);
 
+matrix * generateRandomMatrix(int rows, int cols);
+
 #endif //CRIPTO_MATRIX_H
