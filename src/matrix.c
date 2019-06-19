@@ -416,6 +416,7 @@ void multiplyByScalar(matrix * mtx, int32_t scalar){
 
 matrix * newMatrixA(int n, int k) {
     int i, j;
+    int primes[]={2,    3,    5,   7,   11,   13,   17,   19,   23,  29};
     matrix * mtx = newMatrix(n, k);
     matrix * prod = NULL;
     setSeed(time(0));
@@ -423,10 +424,14 @@ matrix * newMatrixA(int n, int k) {
         if(prod!=NULL){
             deleteMatrix(prod);
         }
-
+        int inx=0;
         for(i = 1; i <= n; i++)
             for(j = 1; j <= k; j++){
-            setElement(mtx, i,j, nextChar());
+            setElement(mtx, i,j, nextChar()); //TODO HARDCODED
+            inx++;
+            if(inx>9){
+                inx=0;
+            }
         }
         matrix * mtxTransposed = newMatrix(k,n);
         prod = newMatrix(n,n);
@@ -780,9 +785,9 @@ matrix* recoverG(matrix* m_shadow){
     return mg;
 }
 
-matrixCol* getMatrixColG(matrixCol* mcol_shadows){
-    matrixCol* mcg = newMatrixCol(mcol_shadows->size);
-    for(int i=0;i<mcol_shadows->size;i++){
+matrixCol* getMatrixColG(matrixCol* mcol_shadows, int k){
+    matrixCol* mcg = newMatrixCol(k);
+    for(int i=0;i<k;i++){
         mcg->matrixes[i] = recoverG(mcol_shadows->matrixes[i]);
     }
     return mcg;
@@ -790,6 +795,7 @@ matrixCol* getMatrixColG(matrixCol* mcol_shadows){
 
 matrix * generateRandomMatrix(int rows, int cols) {
     int i,j;
+    setSeed(time(0));
     matrix * result = newMatrix(rows, cols);
 
     for(i = 1; i <= rows; i++)

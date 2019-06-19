@@ -99,7 +99,7 @@ matrix * newSecretMatrixS(matrix * doubleS, matrix * r);
 
 matrixCol* getMatrixColSh(matrixCol* v,matrixCol* g);
 
-matrixCol* getMatrixColG(matrixCol* mcol_shadows);
+matrixCol* getMatrixColG(matrixCol* mcol_shadows, int k);
 
 int matrix_add(matrix * mtx1, matrix * mtx2, matrix * substract);
 

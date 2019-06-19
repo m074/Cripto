@@ -137,13 +137,14 @@ void distribute(Configuration* cfg){
 
         matrix* mr=newMatrixR(ms,mdoubles);
 
-        matrix* mrw = newMatrixRW(mw,mr);
+        matrix* mrw = newMatrixRW(mw,mdoubles);
 
         matrixCol* mcg = generateAllMatrixG(n,cs,mr);
 
         matrixCol* vectorsX=getVectorsX(k,n);
         matrixCol* vectorsV=getVectorsV(ma,vectorsX);
         matrixCol* shadows = getMatrixColSh(vectorsV,mcg);
+
 
         for(int s=0;s<shadows->size;s++){
             putMatrixSh(sh_images[s],shadows->matrixes[s],i,n);
@@ -200,7 +201,7 @@ void recover(Configuration* cfg){
         matrix* mb=newMatrixB(mcsh);
         matrix* mdobleS=newMatrixS(mb);
 
-        matrixCol* mcg =getMatrixColG(mcsh);
+        matrixCol* mcg =getMatrixColG(mcsh,k);
 
 
         matrix* mr = recoverMatrixR(mcg,cs);
