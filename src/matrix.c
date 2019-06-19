@@ -103,9 +103,15 @@ int setElement(matrix * mtx, int row, int col, int32_t val)
 {
 	if (!mtx) return -1;
 	assert (mtx->data);
+
+    assert(row <= 0 || row > mtx->rows ||
+           col <= 0 || col > mtx->cols);
+
 	if (row <= 0 || row > mtx->rows ||
-		col <= 0 || col > mtx->cols)
-		return -2;
+		col <= 0 || col > mtx->cols){
+
+        return -2;
+	}
 
 	ELEM(mtx, row, col) = val;
 	return 0;
@@ -119,6 +125,11 @@ int setElement(matrix * mtx, int row, int col, int32_t val)
 int getElement(matrix * mtx, int row, int col, int32_t * val) {
 	if (!mtx || !val) return -1;
 	assert (mtx->data);
+
+    assert(row <= 0 || row > mtx->rows ||
+           col <= 0 || col > mtx->cols);
+
+
 	if (row <= 0 || row > mtx->rows ||
 		col <= 0 || col > mtx->cols)
 		return -2;
@@ -624,7 +635,7 @@ matrix* newMatrixB(matrixCol* mc){
 
     for(int i = 1; i <= mc->matrixes[0]->rows; i++){
         for(int j = 0; j<mc->size;j++){
-            setElement(b, i, 1, ELEM(mc->matrixes[j], i,1));
+            setElement(b, i, j, ELEM(mc->matrixes[j], i,1));
         }
     }
     return b;
