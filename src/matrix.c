@@ -587,6 +587,8 @@ matrixCol* getVectorsV(matrix* ma, matrixCol* xv){
 //        mc->matrixes[r]=malloc(sizeof(matrix*));
         mc->matrixes[r]=newMatrix(ma->rows,1);
         product(ma,xv->matrixes[r],mc->matrixes[r]);
+        normalize(mc->matrixes[r]);
+
     }
 
     return mc;
@@ -662,8 +664,8 @@ matrix* recoverMatrixR(matrixCol* allG, int32_t* c){
     for(int i=1;i<=mr->rows;i++){
         for(int j=1;j<=2;j++){
             matrix * rsmall = getrsmall(allG,c,i,j);
-            for(int k=1; k<=rsmall->rows;k++){
-                ELEM(mr,i,rsmall->rows*(j-1)+k)= ELEM(rsmall,k,1);
+            for(int k=1; k<=(rsmall->rows/2);k++){
+                ELEM(mr,i,(rsmall->rows/2)*(j-1)+k)= ELEM(rsmall,k,1);
             }
             deleteMatrix(rsmall);
         }
