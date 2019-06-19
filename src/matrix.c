@@ -339,7 +339,7 @@ int diagonal(matrix * v, matrix * mtx) {
 
 static void swap(matrix * mtx, int row1, int row2, int col)
 {
-	for (int i = 0; i < col; i++)
+	for (int i = 1; i <= col; i++)
 	{
         int32_t temp = ELEM(mtx,row1,i);
 		ELEM(mtx,row1,i) = ELEM(mtx,row2,i);
