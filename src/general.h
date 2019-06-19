@@ -27,7 +27,6 @@
 #define BODY_START_HEADER_SIZE 0x4
 
 
-
 typedef struct byte_buffer_t
 {
     u_int8_t *p;
@@ -67,6 +66,8 @@ void free_bbuffer(BBuffer* bb);
 
 Img* read_bmp(char* filename);
 
+void change_filename(Img* img,char* filename);
+
 Img** read_images_from_dir(char * directory, int n);
 
 matrix* getMatrixS(Img* img, int number,int size);
@@ -82,6 +83,8 @@ matrix* getMatrixSh(Img* img,int pos, int n);
 void putMatrixSh(Img* img,matrix* sh,int pos, int n);
 
 u_int8_t get_bits(Img* img,u_int32_t pos, int bits);
+
+void deleteImg(Img* img);
 
 void set_bits(Img* img,u_int32_t pos, u_int8_t value, int bits);
 

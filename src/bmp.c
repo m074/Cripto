@@ -13,7 +13,7 @@ Img* read_bmp(char* filename){
     Img* img= malloc(sizeof(Img));
 
     img->filename=malloc(sizeof(char)*(1+strlen(filename)));
-    strncpy(img->filename,filename,strlen(filename));
+    strcpy(img->filename,filename);
 
     img->bb=readfile(filename);
 
@@ -38,6 +38,13 @@ Img* read_bmp(char* filename){
     return img;
 }
 
+void change_filename(Img* img,char* filename){
+    free(img->filename);
+    img->filename=malloc(sizeof(char)*(1+strlen(filename)));
+    strncpy(img->filename,filename,strlen(filename));
+
+}
+
 Img* copy_img(Img* img){
     Img* img2 = malloc(sizeof(Img));
     memcpy(img2,img,sizeof(Img));
@@ -46,8 +53,9 @@ Img* copy_img(Img* img){
     return img2;
 }
 
-void free_img(Img* img){
+void deleteImg(Img* img){
     free_bbuffer(img->bb);
+    free(img->filename);
     free(img);
 }
 
@@ -86,7 +94,6 @@ void set_bits(Img* img,u_int32_t pos, u_int8_t value, int bits){ //TODO check
 
 u_int8_t get_bits(Img* img,u_int32_t pos, int bits){
     u_int8_t c = get_byte(img,pos);
-    printf("%d\n",c);
     if(bits==1){
         c = c & 1;
     }

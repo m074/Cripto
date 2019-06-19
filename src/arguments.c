@@ -32,7 +32,7 @@
 //secreto (en el caso de que se haya elegido la opción (-d)), o donde están las imágenes que
 //contienen oculto el secreto ( en el caso de que se haya elegido
 
-
+int c[8]={1,2,3,4,5,6,7,8};
 
 
 void help();
@@ -40,6 +40,7 @@ void help();
 void distribute(Configuration* cfg);
 void recover(Configuration* cfg);
 
+void select_mode(Configuration* cfg);
 
 
 Configuration* parse_options(int argc, char *argv[]){
@@ -95,7 +96,7 @@ Configuration* parse_options(int argc, char *argv[]){
                 abort();
         }
     }
-
+    select_mode(cfg);
     return cfg;
 }
 
@@ -104,6 +105,7 @@ void select_mode(Configuration* cfg){
 
 
     if(cfg->number_n==0 || cfg->m_image_name==0){
+        printf("Argumentos invalidos\n");
         exit(EXIT_FAILURE);
     }
     if(cfg->d_mode){ //DISTRIBUTE MODE
@@ -112,19 +114,19 @@ void select_mode(Configuration* cfg){
         recover(cfg);
     }
 
-    //todo WRITE FILES!!!
     exit(EXIT_SUCCESS);
 
 }
-int c[8]={1,2,3,4,5,6,7,8};
+
 
 
 void distribute(Configuration* cfg){
     int n= cfg->number_n;
     int k= cfg->number_k;
-    Img** sh_images = read_images_from_dir(cfg->dir,n); //hay N imagenes
     Img* s_image  = read_bmp(cfg->s_image_name);
     Img* m_image  = read_bmp(cfg->s_image_name);
+    Img** sh_images = read_images_from_dir(cfg->dir,n); //hay N imagenes
+
     for(int i=0;i<getQuantiyMatrixS(s_image,n);i++){
 
         matrix* ma=newMatrixA(n,k);
@@ -149,40 +151,65 @@ void distribute(Configuration* cfg){
         putMatrixS(m_image,mrw,i,n);
         //dont touch s_image
 
+        deleteMatrix(ma);
+        deleteMatrix(mdoubles);
+        deleteMatrix(ms);
+        deleteMatrix(mw);
+        deleteMatrix(mr);
+        deleteMatrix(mrw);
+        deleteMatrixCol(mcg);
+        deleteMatrixCol(vectorsX);
+        deleteMatrixCol(vectorsV);
+        deleteMatrixCol(shadows);
 
-        //TODO FIX MEMORY LEAKS!
     }
+    writefile(m_image->bb,"alaa.bmp"); //TODO RW IMAGE
+    for(int sh=0;sh<n;sh++){
+        writefile(sh_images[sh]->bb,sh_images[sh]->filename);
+    }
+
+    deleteImg(s_image);
+    deleteImg(m_image);
+    for(int sh=0;sh<n;sh++){
+        deleteImg(sh_images[sh]);
+    }
+    free(sh_images);
 }
 
 void recover(Configuration* cfg){
     int n= cfg->number_n;
     int k= cfg->number_k;
     Img** shadows = read_images_from_dir(cfg->dir,n); //hay N imagenes
-//    Img* m_image  = read_bmp(cfg->s_image_name);
-//
-//    Img* s_image = copy_img(m_image);
-//    free(s_image->filename);
-//    s_image->filename=cfg->s_image_name;
+    Img* rw_image  = read_bmp(cfg->m_image_name);
+
+    Img* s_image = copy_img(rw_image);
+    change_filename(s_image,cfg->s_image_name);
+
+    Img* w_image = copy_img(rw_image);
+    change_filename(w_image,"watermark.bmp");
 
     for(int i=0;i<100;i++){ //todo FIX
         matrixCol* mcsh=newMatrixCol(k);
         for(int s=0;s<k;s++){
             mcsh->matrixes[s]=getMatrixSh(shadows[s],i,n);
         }
-//        matrix* mb=newMatrixB(mcsh);
-//        matrix* mdobleS=newMatrixS(mb);
-//        matrixCol* mcg =getMatrixColG(mcsh);
-//
-//        matrix* mr = recoverMatrixR(mcg,c);
+        matrix* mb=newMatrixB(mcsh);
+        matrix* mdobleS=newMatrixS(mb);
+        matrixCol* mcg =getMatrixColG(mcsh);
 
-//        matrix* ms= recoverMatrixS(mdobleS,mr);
-//
-//        matrix* mrw = getMatrixS(m_image,i,n);
-//
-//        matrix* mw = recoverMatrixS(mdobleS,mrw);
+        matrix* mr = recoverMatrixR(mcg,c);
 
+        matrix* ms= recoverMatrixS(mdobleS,mr);
 
+        matrix* mrw = getMatrixS(rw_image,i,n);
+
+        matrix* mw = recoverMatrixS(mdobleS,mrw);
+
+        putMatrixS(s_image,ms,i,n);
+        putMatrixS(w_image,mw,i,n);
     }
+    writefile(s_image->bb,s_image->filename);
+    writefile(w_image->bb,w_image->filename);
 }
 
 void help() {printf("La ayuda...\n");}

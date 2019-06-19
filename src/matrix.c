@@ -49,7 +49,7 @@ matrixCol * newMatrixCol(int size) {
     mC->size = size;
 
     // allocate a double array of length rows * cols
-    mC->matrixes = (matrix **) malloc(size*sizeof(matrix *));
+    mC->matrixes = (matrix **) malloc(size * sizeof(matrix *) );
 
     return mC;
 }
@@ -67,6 +67,13 @@ int deleteMatrix(matrix * mtx) {
 	return 0;
 }
 
+void deleteMatrixCol(matrixCol* mc){
+    for(int i=0; i<mc->size; i++){
+        deleteMatrix(mc->matrixes[i]);
+    }
+    free(mc->matrixes);
+    free(mc);
+}
 
 
 #define ELEMFROMARRAY(mtx, row, col, dim) \
@@ -398,9 +405,13 @@ void multiplyByScalar(matrix * mtx, int32_t scalar){
 matrix * newMatrixA(int n, int k) {
     int i, j;
     matrix * mtx = newMatrix(n, k);
-    matrix * prod;
+    matrix * prod = NULL;
     setSeed(time(0));
     do {
+        if(prod!=NULL){
+            deleteMatrix(prod);
+        }
+
         for(i = 1; i <= n; i++)
             for(j = 1; j <= k; j++){
             setElement(mtx, i,j, nextChar());
@@ -409,10 +420,11 @@ matrix * newMatrixA(int n, int k) {
         prod = newMatrix(n,n);
         transpose(mtx,mtxTransposed);
         product(mtx,mtxTransposed,prod);
+        deleteMatrix(mtxTransposed);
 
     } while(rankOfMatrix(mtx) != k && invertible(prod));
     normalize(mtx);
-
+    deleteMatrix(prod);
     return mtx;
 }
 
@@ -559,19 +571,20 @@ matrixCol* getVectorsX(int size, int quantity){
     matrixCol *mc=newMatrixCol(quantity);
     matrix* m = newMatrixA(quantity,size);
     for(int r=0;r<quantity;r++){
-        mc->matrixes[r]=malloc(sizeof(matrix*));
+//        mc->matrixes[r]=malloc(sizeof(matrix*));
         mc->matrixes[r]=newMatrix(size,1);
         for(int j=1;j<=size;j++){
             ELEM(mc->matrixes[r],j,1)=ELEM(m,r+1,j);
         }
     }
+    deleteMatrix(m);
     return mc;
 }
 
 matrixCol* getVectorsV(matrix* ma, matrixCol* xv){
     matrixCol *mc=newMatrixCol(xv->size);
     for(int r=0;r<xv->size;r++){
-        mc->matrixes[r]=malloc(sizeof(matrix*));
+//        mc->matrixes[r]=malloc(sizeof(matrix*));
         mc->matrixes[r]=newMatrix(ma->rows,1);
         product(ma,xv->matrixes[r],mc->matrixes[r]);
     }
@@ -730,7 +743,7 @@ matrix * newSecretMatrixS(matrix * doubleS, matrix * r) {
 
 matrixCol* getMatrixColSh(matrixCol* v,matrixCol* g){
     matrixCol* mcs=newMatrixCol(g->size);
-    for(int i=0;i<g->size;g++){
+    for(int i=0;i<g->size;i++){
         mcs->matrixes[i]=newMatrixSh(v->matrixes[i],g->matrixes[i]);
     }
 

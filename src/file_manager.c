@@ -15,7 +15,6 @@ BBuffer* readfile(char* filename){
     bb->p = malloc(size);
     fseek(fd, 0, SEEK_SET);
 
-    printf("%d\n",size);
     if (fread(bb->p, 1, bb->length, fd) != (size_t)bb->length){
 
     //    if (fread(bb->p, 1, bb->length, fd) != bb->length){

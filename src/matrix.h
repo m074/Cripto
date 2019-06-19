@@ -105,4 +105,6 @@ int matrix_add(matrix * mtx1, matrix * mtx2, matrix * substract);
 
 matrix* recoverMatrixS(matrix* mdobles, matrix* mr);
 
+void deleteMatrixCol(matrixCol* mc);
+
 #endif //CRIPTO_MATRIX_H

@@ -30,6 +30,7 @@
 //}
 
 int main(int argc, char *argv[]){
+    parse_options(argc,argv);
 //    matrix* sh1=newMatrixA(4,3);
 //    setElement(sh1,1,1,62);
 //    setElement(sh1,1,2,36);
