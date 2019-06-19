@@ -3,6 +3,7 @@
 
 BBuffer* readfile(char* filename){
     FILE *fd;
+    printf("Abriendo el archivo: %s\n",filename);
     if ((fd = fopen(filename, "rb")) == NULL)
     {
         return NULL;

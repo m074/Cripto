@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "general.h"
-
+int cs[8]={1,2,3,4,5,6,7,8};
 
 
 //-d o bien –r
@@ -32,7 +32,7 @@
 //secreto (en el caso de que se haya elegido la opción (-d)), o donde están las imágenes que
 //contienen oculto el secreto ( en el caso de que se haya elegido
 
-int c[8]={1,2,3,4,5,6,7,8};
+
 
 
 void help();
@@ -124,7 +124,7 @@ void distribute(Configuration* cfg){
     int n= cfg->number_n;
     int k= cfg->number_k;
     Img* s_image  = read_bmp(cfg->s_image_name);
-    Img* m_image  = read_bmp(cfg->s_image_name);
+    Img* m_image  = read_bmp(cfg->m_image_name);
     Img** sh_images = read_images_from_dir(cfg->dir,n); //hay N imagenes
 
     for(int i=0;i<getQuantiyMatrixS(s_image,n);i++){
@@ -139,7 +139,7 @@ void distribute(Configuration* cfg){
 
         matrix* mrw = newMatrixRW(mw,mr);
 
-        matrixCol* mcg = generateAllMatrixG(n,c,mr);
+        matrixCol* mcg = generateAllMatrixG(n,cs,mr);
 
         matrixCol* vectorsX=getVectorsX(k,n);
         matrixCol* vectorsV=getVectorsV(ma,vectorsX);
@@ -148,6 +148,8 @@ void distribute(Configuration* cfg){
         for(int s=0;s<shadows->size;s++){
             putMatrixSh(sh_images[s],shadows->matrixes[s],i,n);
         }
+
+
         putMatrixS(m_image,mrw,i,n);
         //dont touch s_image
 
@@ -179,8 +181,9 @@ void distribute(Configuration* cfg){
 void recover(Configuration* cfg){
     int n= cfg->number_n;
     int k= cfg->number_k;
-    Img** sh_images = read_images_from_dir(cfg->dir,k); //hay N imagenes
+
     Img* rw_image  = read_bmp(cfg->m_image_name);
+    Img** sh_images = read_images_from_dir(cfg->dir,k); //hay N imagenes
 
     Img* s_image = copy_img(rw_image);
     change_filename(s_image,cfg->s_image_name);
@@ -188,16 +191,19 @@ void recover(Configuration* cfg){
     Img* w_image = copy_img(rw_image);
     change_filename(w_image,"watermark.bmp");
 
-    for(int i=0;i<100;i++){ //todo FIX
+    for(int i=0;i<getQuantiyMatrixS(rw_image,n);i++){ //todo FIX
         matrixCol* mcsh=newMatrixCol(k);
         for(int s=0;s<k;s++){
             mcsh->matrixes[s]=getMatrixSh(sh_images[s],i,n);
         }
+
         matrix* mb=newMatrixB(mcsh);
         matrix* mdobleS=newMatrixS(mb);
+
         matrixCol* mcg =getMatrixColG(mcsh);
 
-        matrix* mr = recoverMatrixR(mcg,c);
+
+        matrix* mr = recoverMatrixR(mcg,cs);
 
         matrix* ms= recoverMatrixS(mdobleS,mr);
 
@@ -218,8 +224,7 @@ void recover(Configuration* cfg){
         deleteMatrixCol(mcsh);
     }
     writefile(s_image->bb,"sss.bmp");
-    writefile(w_image->bb,"www.bmp");
-
+    writefile(w_image->bb,w_image->filename);
 
     deleteImg(s_image);
     deleteImg(rw_image);

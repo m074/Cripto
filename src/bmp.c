@@ -64,17 +64,18 @@ void deleteImg(Img* img){
 
 u_int8_t get_byte(Img* img,u_int32_t pos){
     u_int8_t s;
-    s = *(img->bb->p + img->offset + pos);
+//    s = *(img->bb->p + img->offset + pos);
+    s =  img->bb->p[img->offset + pos];
     return s;
 }
 
 void set_byte(Img* img,u_int32_t pos, u_int8_t value){
-    memcpy((img->bb->p + img->offset + pos) , &value, sizeof(u_int8_t));
+    img->bb->p[img->offset + pos]=value;
+//    memcpy((img->bb->p + img->offset + pos) , &value, sizeof(u_int8_t));
 }
 
 void set_bits(Img* img,u_int32_t pos, u_int8_t value, int bits){ //TODO check
     u_int8_t c = get_byte(img,pos);
-
     if(bits==1){
         value = value << 7;
         value = value >> 7;
@@ -97,11 +98,12 @@ void set_bits(Img* img,u_int32_t pos, u_int8_t value, int bits){ //TODO check
 
 u_int8_t get_bits(Img* img,u_int32_t pos, int bits){
     u_int8_t c = get_byte(img,pos);
+
     if(bits==1){
-        c = c & 1;
+        c = c & 0x1;
     }
     if(bits==2){
-        c = c & 3;
+        c = c & 0x3;
     }
     return c;
 }
@@ -123,7 +125,7 @@ void putMatrixS(Img* img,matrix* ms,int number,int size){
     __uint8_t* pos = img->bb->p + img->offset + (number*size*size);
     for(int j=1; j<=size; j++){
         for(int i=1; i<=size; i++){
-            *pos= (u_int8_t)ELEM(ms,i,j);
+            pos[0]= (u_int8_t)ELEM(ms,i,j);
             pos+=1;
         }
     }
@@ -166,7 +168,7 @@ int getQuantiyMatrixS(Img* img,int n){
 }
 
 void putMatrixSh(Img* img,matrix* sh,int pos, int n){
-    int matrix_offset = img->offset + sh->rows*sh->cols*pos;
+    uint8_t matrix_offset = n*3*pos;
     int pasos=2;
     if(n==8){
         pasos=1;
@@ -175,32 +177,37 @@ void putMatrixSh(Img* img,matrix* sh,int pos, int n){
         for(int i=1;i<=sh->rows;i++){
             int valor = ELEM(sh,i,j);
                 for(int v=0;v<n;v++){
-                    set_bits(img,matrix_offset,valor,1);
+                    set_bits(img,matrix_offset,valor,pasos);
                     valor= valor>> pasos;
+                    matrix_offset+=1;
                 }
-                matrix_offset+=1;
+
         }
     }
 }
 
 matrix* getMatrixSh(Img* img,int pos, int n){
     matrix* sh=newMatrix(n,3);
-    int matrix_offset = img->offset + sh->rows*sh->cols*pos;
+    uint8_t matrix_offset = n*3*pos;
 
     int pasos=2;
     if(n==8){
         pasos=1;
     }
-    for(int j=1;j<=sh->cols;j++){
-        for(int i=1;i<=sh->rows;i++){
+    for(int j=1;j<=3;j++){
+        for(int i=1;i<=n;i++){
             int valor=0;
             for(int v=0;v<n;v++){
-                int bit=get_bits(img,matrix_offset,1);
+                int bit=get_bits(img,matrix_offset,pasos);
                 valor= valor<< pasos;
-                valor= valor & bit;
+                valor= valor | bit;
+                matrix_offset+=1;
             }
-            matrix_offset+=1;
+            ELEM(sh,i,j)=valor;
+
+
         }
     }
+
     return sh;
 }

@@ -734,6 +734,7 @@ matrix * newMatrixSh(matrix * v, matrix * g) {
             ELEM(results,i,j) = ELEM(g, i, j - 1);
         }
     }
+    normalize(results);
     return results;
 }
 
