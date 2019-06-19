@@ -179,7 +179,7 @@ void distribute(Configuration* cfg){
 void recover(Configuration* cfg){
     int n= cfg->number_n;
     int k= cfg->number_k;
-    Img** shadows = read_images_from_dir(cfg->dir,n); //hay N imagenes
+    Img** sh_images = read_images_from_dir(cfg->dir,k); //hay N imagenes
     Img* rw_image  = read_bmp(cfg->m_image_name);
 
     Img* s_image = copy_img(rw_image);
@@ -191,7 +191,7 @@ void recover(Configuration* cfg){
     for(int i=0;i<100;i++){ //todo FIX
         matrixCol* mcsh=newMatrixCol(k);
         for(int s=0;s<k;s++){
-            mcsh->matrixes[s]=getMatrixSh(shadows[s],i,n);
+            mcsh->matrixes[s]=getMatrixSh(sh_images[s],i,n);
         }
         matrix* mb=newMatrixB(mcsh);
         matrix* mdobleS=newMatrixS(mb);
@@ -207,9 +207,27 @@ void recover(Configuration* cfg){
 
         putMatrixS(s_image,ms,i,n);
         putMatrixS(w_image,mw,i,n);
+
+        deleteMatrix(ms);
+        deleteMatrix(mb);
+        deleteMatrix(mw);
+        deleteMatrix(mr);
+        deleteMatrix(mrw);
+        deleteMatrix(mdobleS);
+        deleteMatrixCol(mcg);
+        deleteMatrixCol(mcsh);
     }
-    writefile(s_image->bb,s_image->filename);
-    writefile(w_image->bb,w_image->filename);
+    writefile(s_image->bb,"sss.bmp");
+    writefile(w_image->bb,"www.bmp");
+
+
+    deleteImg(s_image);
+    deleteImg(rw_image);
+    deleteImg(w_image);
+    for(int sh=0;sh<k;sh++){
+        deleteImg(sh_images[sh]);
+    }
+    free(sh_images);
 }
 
 void help() {printf("La ayuda...\n");}

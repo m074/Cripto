@@ -41,7 +41,7 @@ Img* read_bmp(char* filename){
 void change_filename(Img* img,char* filename){
     free(img->filename);
     img->filename=malloc(sizeof(char)*(1+strlen(filename)));
-    strncpy(img->filename,filename,strlen(filename)+2);
+    strcpy(img->filename,filename);
 
 }
 
@@ -49,6 +49,9 @@ Img* copy_img(Img* img){
     Img* img2 = malloc(sizeof(Img));
     memcpy(img2,img,sizeof(Img));
     img2->bb = copy_bbuffer(img->bb);
+    img2->filename = malloc(sizeof(char)*(strlen(img2->filename)+1));
+    strcpy(img2->filename,img->filename);
+
 
     return img2;
 }

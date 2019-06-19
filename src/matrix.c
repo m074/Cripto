@@ -621,7 +621,7 @@ matrix* newMatrixB(matrixCol* mc){
     matrix * b = newMatrix(mc->matrixes[0]->rows, 2);
 
     for(int i = 1; i <= mc->matrixes[0]->rows; i++){
-        for(int j = 0; i<mc->size;j++){
+        for(int j = 0; j<mc->size;j++){
             setElement(b, i, 1, ELEM(mc->matrixes[j], i,1));
         }
     }
@@ -665,6 +665,7 @@ matrix* recoverMatrixR(matrixCol* allG, int32_t* c){
             for(int k=1; k<=rsmall->rows;k++){
                 ELEM(mr,i,rsmall->rows*(j-1)+k)= ELEM(rsmall,k,1);
             }
+            deleteMatrix(rsmall);
         }
     }
     normalize(mr);
@@ -688,11 +689,14 @@ matrix * getrsmall(matrixCol * allG, int32_t * c, int x, int y) {
         }
     }
 
-    printMatrix(cMatrix);
-    printf("\n");
-    printMatrix(g);
-    printf("\nx: %d, y:%d\n", x, y);
-    return solveEquations(cMatrix, g);
+//    printMatrix(cMatrix);
+//    printf("\n");
+//    printMatrix(g);
+//    printf("\nx: %d, y:%d\n", x, y);
+    matrix* rot= solveEquations(cMatrix, g);
+    deleteMatrix(cMatrix);
+    deleteMatrix(g);
+    return rot;
 }
 
 matrix * solveEquations(matrix * m, matrix * g) {

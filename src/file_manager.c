@@ -42,7 +42,7 @@ int writefile(BBuffer* bb, char* filename){
 BBuffer* copy_bbuffer(BBuffer* bb){
     BBuffer* bb2 = malloc(sizeof(BBuffer));
     bb2->length = bb->length;
-    bb2->p = malloc(sizeof(bb->length));
+    bb2->p = malloc((bb->length));
     memcpy(bb2->p,bb->p,bb->length);
 
     return bb2;
