@@ -174,6 +174,7 @@ int printMatrix(matrix * mtx) {
 		// separate rows by newlines
 		printf("\n");
 	}
+    printf("\n");
 	return 0;
 }
 
@@ -349,7 +350,7 @@ int diagonal(matrix * v, matrix * mtx) {
 
 static void swap(matrix * mtx, int row1, int row2, int col)
 {
-	for (int i = 0; i < col; i++)
+	for (int i = 1; i <= col; i++)
 	{
         int32_t temp = ELEM(mtx,row1,i);
 		ELEM(mtx,row1,i) = ELEM(mtx,row2,i);
@@ -785,6 +786,16 @@ matrixCol* getMatrixColG(matrixCol* mcol_shadows){
         mcg->matrixes[i] = recoverG(mcol_shadows->matrixes[i]);
     }
     return mcg;
+}
+
+matrix * generateRandomMatrix(int rows, int cols) {
+    int i,j;
+    matrix * result = newMatrix(rows, cols);
+
+    for(i = 1; i <= rows; i++)
+        for(j = 1; j <= cols; j++)
+            setElement(result, i, j, nextChar());
+    return result;
 }
 
 
