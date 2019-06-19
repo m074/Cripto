@@ -67,8 +67,6 @@ int deleteMatrix(matrix * mtx) {
 	return 0;
 }
 
-#define ELEM(mtx, row, col) \
-  mtx->data[(col-1) * mtx->rows + (row-1)]
 
 
 #define ELEMFROMARRAY(mtx, row, col, dim) \
@@ -216,6 +214,23 @@ int substract(matrix * mtx1, matrix * mtx2, matrix * substract) {
         for (row = 1; row <= mtx1->rows; row++)
             ELEM(substract, row, col) =
                     ELEM(mtx1, row, col) - ELEM(mtx2, row, col);
+    return 0;
+}
+
+
+int matrix_add(matrix * mtx1, matrix * mtx2, matrix * substract) {
+    if (!mtx1 || !mtx2 || !substract) return -1;
+    if (mtx1->rows != mtx2->rows ||
+        mtx1->rows != substract->rows ||
+        mtx1->cols != mtx2->cols ||
+        mtx1->cols != substract->cols)
+        return -2;
+
+    int row, col;
+    for (col = 1; col <= mtx1->cols; col++)
+        for (row = 1; row <= mtx1->rows; row++)
+            ELEM(substract, row, col) =
+                    ELEM(mtx1, row, col) + ELEM(mtx2, row, col);
     return 0;
 }
 
@@ -530,6 +545,13 @@ matrix * newMatrixR(matrix * s, matrix * sCalculated) {
     return r;
 }
 
+matrix* recoverMatrixS(matrix* mdobles, matrix* mr){
+    matrix* ms = newMatrix(mdobles->rows, mdobles->cols);
+    matrix_add(mdobles,mr,ms);
+    normalize(ms);
+    return ms;
+}
+
 
 
 
@@ -546,12 +568,12 @@ matrixCol* getVectorsX(int size, int quantity){
     return mc;
 }
 
-matrixCol* getVectorsV(matrix* ma, matrix** xv, int quantity){
-    matrixCol *mc=newMatrixCol(quantity);
-    for(int r=0;r<quantity;r++){
+matrixCol* getVectorsV(matrix* ma, matrixCol* xv){
+    matrixCol *mc=newMatrixCol(xv->size);
+    for(int r=0;r<xv->size;r++){
         mc->matrixes[r]=malloc(sizeof(matrix*));
         mc->matrixes[r]=newMatrix(ma->rows,1);
-        product(ma,xv[r],mc->matrixes[r]);
+        product(ma,xv->matrixes[r],mc->matrixes[r]);
     }
 
     return mc;
@@ -581,22 +603,19 @@ matrixCol * generateAllMatrixG(int size, int32_t * c, matrix * r) {
     return mc;
 }
 
-matrix * newMatrixB(matrix * sh1, matrix * sh2) {
-    int i;
 
-    if(!sh1 || !sh2 || sh1->rows != sh2->rows){
-        return NULL;
+matrix* newMatrixB(matrixCol* mc){
+    matrix * b = newMatrix(mc->matrixes[0]->rows, 2);
+
+    for(int i = 1; i <= mc->matrixes[0]->rows; i++){
+        for(int j = 0; i<mc->size;j++){
+            setElement(b, i, 1, ELEM(mc->matrixes[j], i,1));
+        }
     }
-
-    matrix * b = newMatrix(sh1->rows, 2);
-
-    for(i = 1; i <= sh1->rows; i++){
-        setElement(b, i, 1, ELEM(sh1, i,1));
-        setElement(b, i, 2, ELEM(sh2, i,1));
-    }
-
     return b;
 }
+
+
 
 /*Generates a new submatrix excluding the
  * col from the matrix passed as
@@ -709,6 +728,33 @@ matrix * newSecretMatrixS(matrix * doubleS, matrix * r) {
 }
 
 
+matrixCol* getMatrixColSh(matrixCol* v,matrixCol* g){
+    matrixCol* mcs=newMatrixCol(g->size);
+    for(int i=0;i<g->size;g++){
+        mcs->matrixes[i]=newMatrixSh(v->matrixes[i],g->matrixes[i]);
+    }
+
+    return mcs;
+
+}
+
+matrix* recoverG(matrix* m_shadow){
+    matrix* mg=newMatrix(m_shadow->rows,m_shadow->cols-1);
+    for(int i=1;i<=m_shadow->rows;i++){
+        for(int j=2;j<=m_shadow->cols;j++){
+            setElement(mg,i,j-1,ELEM(m_shadow,i,j));
+        }
+    }
+    return mg;
+}
+
+matrixCol* getMatrixColG(matrixCol* mcol_shadows){
+    matrixCol* mcg = newMatrixCol(mcol_shadows->size);
+    for(int i=0;i<mcol_shadows->size;i++){
+        mcg->matrixes[i] = recoverG(mcol_shadows->matrixes[i]);
+    }
+    return mcg;
+}
 
 
 

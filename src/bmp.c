@@ -11,7 +11,12 @@
 Img* read_bmp(char* filename){
 
     Img* img= malloc(sizeof(Img));
+
+    img->filename=malloc(sizeof(char)*(1+strlen(filename)));
+    strncpy(img->filename,filename,strlen(filename));
+
     img->bb=readfile(filename);
+
 
     u_int32_t width;
     u_int32_t height;
@@ -91,7 +96,7 @@ u_int8_t get_bits(Img* img,u_int32_t pos, int bits){
     return c;
 }
 
-matrix* getSmatrix(Img* img, int number,int size){
+matrix* getMatrixS(Img* img, int number,int size){
     matrix* m = newMatrix(size,size);
     __uint8_t* pos = img->bb->p + img->offset + (number*size*size);
     for(int j=1; j<=size; j++){
@@ -104,6 +109,18 @@ matrix* getSmatrix(Img* img, int number,int size){
 }
 
 
+void putMatrixS(Img* img,matrix* ms,int number,int size){
+    __uint8_t* pos = img->bb->p + img->offset + (number*size*size);
+    for(int j=1; j<=size; j++){
+        for(int i=1; i<=size; i++){
+            *pos= (u_int8_t)ELEM(ms,i,j);
+            pos+=1;
+        }
+    }
+}
+
+
+
 Img** read_images_from_dir(char * directory, int n) {
     int image_qty = 0;
     struct dirent *p_dirent;
@@ -114,7 +131,7 @@ Img** read_images_from_dir(char * directory, int n) {
 
     //assure(dir != NULL, "Problem opening directory, check your sintax.\n");
     while ((p_dirent = readdir(dir)) != NULL) {
-        if(strstr(p_dirent->d_name, ".bmp") && image_qty < 8 && image_qty <= n) { //TODO magic number
+        if(strstr(p_dirent->d_name, ".bmp") && image_qty < n && image_qty <= n) { //TODO magic number
             path = calloc(strlen(directory) + strlen(p_dirent->d_name) + 2, 1);
             strcpy(path, directory);
             strcat(path, "/");
@@ -128,4 +145,52 @@ Img** read_images_from_dir(char * directory, int n) {
     closedir(dir);
 
     return images;
+}
+
+
+int getQuantiyMatrixS(Img* img,int n){
+    if(img->bits!=8){
+        return -1;
+    }
+    return (img->height*img->width)/(n*n);
+}
+
+void putMatrixSh(Img* img,matrix* sh,int pos, int n){
+    int matrix_offset = img->offset + sh->rows*sh->cols*pos;
+    int pasos=2;
+    if(n==8){
+        pasos=1;
+    }
+    for(int j=1;j<=sh->cols;j++){
+        for(int i=1;i<=sh->rows;i++){
+            int valor = ELEM(sh,i,j);
+                for(int v=0;v<n;v++){
+                    set_bits(img,matrix_offset,valor,1);
+                    valor= valor>> pasos;
+                }
+                matrix_offset+=1;
+        }
+    }
+}
+
+matrix* getMatrixSh(Img* img,int pos, int n){
+    matrix* sh=newMatrix(n,3);
+    int matrix_offset = img->offset + sh->rows*sh->cols*pos;
+
+    int pasos=2;
+    if(n==8){
+        pasos=1;
+    }
+    for(int j=1;j<=sh->cols;j++){
+        for(int i=1;i<=sh->rows;i++){
+            int valor=0;
+            for(int v=0;v<n;v++){
+                int bit=get_bits(img,matrix_offset,1);
+                valor= valor<< pasos;
+                valor= valor & bit;
+            }
+            matrix_offset+=1;
+        }
+    }
+    return sh;
 }

@@ -9,6 +9,9 @@
 #include <stdint.h>
 
 
+#define ELEM(mtx, row, col) \
+  mtx->data[(col-1) * mtx->rows + (row-1)]
+
 typedef struct {
     int rows;
     int cols;
@@ -70,7 +73,7 @@ matrix * newMatrixR(matrix * s, matrix * sCalculated);
 
 matrixCol* getVectorsX(int size, int quantity);
 
-matrixCol* getVectorsV(matrix* ma, matrix** xv, int quantity);
+matrixCol* getVectorsV(matrix* ma, matrixCol* xv);
 
 void normalize(matrix* m);
 
@@ -78,7 +81,7 @@ matrixCol * generateAllMatrixG(int size, int32_t * c, matrix * r);
 
 matrixCol * newMatrixCol(int size);
 
-matrix * newMatrixB(matrix * sh1, matrix * sh2);
+matrix* newMatrixB(matrixCol* mc);
 
 matrix * subMatrix(matrix * m, int col);
 
@@ -94,5 +97,12 @@ matrix * newMatrixSh(matrix * v, matrix * g);
 
 matrix * newSecretMatrixS(matrix * doubleS, matrix * r);
 
+matrixCol* getMatrixColSh(matrixCol* v,matrixCol* g);
+
+matrixCol* getMatrixColG(matrixCol* mcol_shadows);
+
+int matrix_add(matrix * mtx1, matrix * mtx2, matrix * substract);
+
+matrix* recoverMatrixS(matrix* mdobles, matrix* mr);
 
 #endif //CRIPTO_MATRIX_H

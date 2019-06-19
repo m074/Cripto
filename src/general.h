@@ -36,6 +36,7 @@ typedef struct byte_buffer_t
 
 typedef struct bmp_t
 {
+    char*      filename;
     u_int32_t  width;
     u_int32_t  height;
     u_int8_t   bits;
@@ -68,7 +69,17 @@ Img* read_bmp(char* filename);
 
 Img** read_images_from_dir(char * directory, int n);
 
-matrix* getSmatrix(Img* img, int number,int size);
+matrix* getMatrixS(Img* img, int number,int size);
+
+void putMatrixS(Img* img,matrix* ms,int number,int size);
+
+Img* copy_img(Img* img);
+
+int getQuantiyMatrixS(Img* img,int n);
+
+matrix* getMatrixSh(Img* img,int pos, int n);
+
+void putMatrixSh(Img* img,matrix* sh,int pos, int n);
 
 u_int8_t get_bits(Img* img,u_int32_t pos, int bits);
 

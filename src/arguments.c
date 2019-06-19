@@ -37,6 +37,9 @@
 
 void help();
 
+void distribute(Configuration* cfg);
+void recover(Configuration* cfg);
+
 
 
 Configuration* parse_options(int argc, char *argv[]){
@@ -92,26 +95,95 @@ Configuration* parse_options(int argc, char *argv[]){
                 abort();
         }
     }
-    //TODO checks
 
     return cfg;
 }
 
 void select_mode(Configuration* cfg){
+    //TODO chekear flags invalidos
+
+
     if(cfg->number_n==0 || cfg->m_image_name==0){
         exit(EXIT_FAILURE);
     }
     if(cfg->d_mode){ //DISTRIBUTE MODE
-
+        distribute(cfg);
     }else if(cfg->r_mode){ //RECOVER MODE
-
+        recover(cfg);
     }
 
+    //todo WRITE FILES!!!
+    exit(EXIT_SUCCESS);
+
+}
+int c[8]={1,2,3,4,5,6,7,8};
+
+
+void distribute(Configuration* cfg){
+    int n= cfg->number_n;
+    int k= cfg->number_k;
+    Img** sh_images = read_images_from_dir(cfg->dir,n); //hay N imagenes
+    Img* s_image  = read_bmp(cfg->s_image_name);
+    Img* m_image  = read_bmp(cfg->s_image_name);
+    for(int i=0;i<getQuantiyMatrixS(s_image,n);i++){
+
+        matrix* ma=newMatrixA(n,k);
+        matrix* mdoubles=newMatrixS(ma);
+
+        matrix* ms=getMatrixS(s_image,i,n);
+        matrix* mw=getMatrixS(m_image,i,n);
+
+        matrix* mr=newMatrixR(ms,mdoubles);
+
+        matrix* mrw = newMatrixRW(mw,mr);
+
+        matrixCol* mcg = generateAllMatrixG(n,c,mr);
+
+        matrixCol* vectorsX=getVectorsX(k,n);
+        matrixCol* vectorsV=getVectorsV(ma,vectorsX);
+        matrixCol* shadows = getMatrixColSh(vectorsV,mcg);
+
+        for(int s=0;s<shadows->size;s++){
+            putMatrixSh(sh_images[s],shadows->matrixes[s],i,n);
+        }
+        putMatrixS(m_image,mrw,i,n);
+        //dont touch s_image
+
+
+        //TODO FIX MEMORY LEAKS!
+    }
 }
 
-void distribute(Configuration cfg);
-void recover(Configuration cfg);
+void recover(Configuration* cfg){
+    int n= cfg->number_n;
+    int k= cfg->number_k;
+    Img** shadows = read_images_from_dir(cfg->dir,n); //hay N imagenes
+//    Img* m_image  = read_bmp(cfg->s_image_name);
+//
+//    Img* s_image = copy_img(m_image);
+//    free(s_image->filename);
+//    s_image->filename=cfg->s_image_name;
 
-void help() {
-    printf("La ayuda...\n");
+    for(int i=0;i<100;i++){ //todo FIX
+        matrixCol* mcsh=newMatrixCol(k);
+        for(int s=0;s<k;s++){
+            mcsh->matrixes[s]=getMatrixSh(shadows[s],i,n);
+        }
+//        matrix* mb=newMatrixB(mcsh);
+//        matrix* mdobleS=newMatrixS(mb);
+//        matrixCol* mcg =getMatrixColG(mcsh);
+//
+//        matrix* mr = recoverMatrixR(mcg,c);
+
+//        matrix* ms= recoverMatrixS(mdobleS,mr);
+//
+//        matrix* mrw = getMatrixS(m_image,i,n);
+//
+//        matrix* mw = recoverMatrixS(mdobleS,mrw);
+
+
+    }
 }
+
+void help() {printf("La ayuda...\n");}
+
