@@ -41,7 +41,7 @@ Img* read_bmp(char* filename){
 void change_filename(Img* img,char* filename){
     free(img->filename);
     img->filename=malloc(sizeof(char)*(1+strlen(filename)));
-    strncpy(img->filename,filename,strlen(filename));
+    strncpy(img->filename,filename,strlen(filename)+2);
 
 }
 
