@@ -104,8 +104,8 @@ int setElement(matrix * mtx, int row, int col, int32_t val)
 	if (!mtx) return -1;
 	assert (mtx->data);
 
-    assert(row <= 0 || row > mtx->rows ||
-           col <= 0 || col > mtx->cols);
+    assert(!(row <= 0 || row > mtx->rows ||
+           col <= 0 || col > mtx->cols));
 
 	if (row <= 0 || row > mtx->rows ||
 		col <= 0 || col > mtx->cols){
@@ -126,8 +126,8 @@ int getElement(matrix * mtx, int row, int col, int32_t * val) {
 	if (!mtx || !val) return -1;
 	assert (mtx->data);
 
-    assert(row <= 0 || row > mtx->rows ||
-           col <= 0 || col > mtx->cols);
+    assert(!(row <= 0 || row > mtx->rows ||
+           col <= 0 || col > mtx->cols));
 
 
 	if (row <= 0 || row > mtx->rows ||
@@ -632,11 +632,11 @@ matrixCol * generateAllMatrixG(int size, int32_t * c, matrix * r) {
 
 
 matrix* newMatrixB(matrixCol* mc){
-    matrix * b = newMatrix(mc->matrixes[0]->rows, 2);
+    matrix * b = newMatrix(mc->matrixes[0]->rows, 2); //TODO FIX MAGIC NUMBER
 
     for(int i = 1; i <= mc->matrixes[0]->rows; i++){
-        for(int j = 0; j<mc->size;j++){
-            setElement(b, i, j, ELEM(mc->matrixes[j], i,1));
+        for(int j = 0; j<2;j++){
+            setElement(b, i, j+1, ELEM(mc->matrixes[j], i,1));
         }
     }
     return b;
