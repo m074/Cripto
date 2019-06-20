@@ -465,7 +465,6 @@ void multiplyByScalar(matrix * mtx, int32_t scalar){
 
 matrix * newMatrixA(int n, int k) {
     matrix * mtx = newMatrix(n, k);
-    setSeed(time(0));
     rankOfMatrix2(mtx, k);
     return mtx;
 }
@@ -613,14 +612,16 @@ matrix* recoverMatrixS(matrix* mdobles, matrix* mr){
 
 matrixCol* getVectorsX(int size, int quantity){
     matrixCol *mc=newMatrixCol(quantity);
-    matrix* m = newMatrixA(size,quantity);
+    int a = nextChar() %251;
     for(int i=0;i<quantity;i++){
         mc->matrixes[i]=newMatrix(size,1);
-        for(int j=1;j<=size;j++){
-            ELEM(mc->matrixes[i],j,1)=ELEM(m,j,i+1);
+        int prev=1;
+       for(int j=1;j<=size;j++){
+            ELEM(mc->matrixes[i],j,1)=(prev)%251;
+           prev= prev*a;
         }
+       a= (a+1)%251;
     }
-    deleteMatrix(m);
     return mc;
 }
 
@@ -822,7 +823,6 @@ matrixCol* getMatrixColG(matrixCol* mcol_shadows, int k){
 
 matrix * generateRandomMatrix(int rows, int cols) {
     int i,j;
-    setSeed(time(0));
     matrix * result = newMatrix(rows, cols);
 
     for(i = 1; i <= rows; i++)
