@@ -140,17 +140,15 @@ void distribute(Configuration* cfg){
         matrixCol* mcs = getMatrixColSh(vectorsV,mcg);
 
         for(int s=0;s<mcs->size;s++){
-
-//            printMatrix(getMatrixSh(sh_images[s],i,n));
             putMatrixSh(sh_images[s],mcs->matrixes[s],i,n);
-//            printf("la que quiero poner\n");
-//            printMatrix(mcs->matrixes[s]);
-//            printf("imagen modificada\n");
-//            printMatrix(getMatrixSh(sh_images[s],i,n));
 
         }
 
         if(i==0){
+            printf("Matrix la R\n");
+            printMatrix(mr);
+            printf("Matrix la Sdoble\n");
+            printMatrix(mdoubles);
             printf("Matrix la S\n");
             printMatrix(ms);
             printf("Matrix la RW\n");
@@ -206,7 +204,7 @@ void recover(Configuration* cfg){
     Img* w_image = copy_img(rw_image);
     change_filename(w_image,"watermark.bmp");
 
-    for(int i=0;i<getQuantiyMatrixS(rw_image,n);i++){ //todo FIX
+    for(int i=0;i<getQuantiyMatrixS(rw_image,n);i++){
         matrixCol* mcsh=newMatrixCol(k);
         for(int s=0;s<k;s++){
             mcsh->matrixes[s]=getMatrixSh(sh_images[s],i,n);
@@ -230,6 +228,12 @@ void recover(Configuration* cfg){
         putMatrixS(w_image,mw,i,n);
 
         if(i==0){
+
+
+            printf("Matrix la R\n");
+            printMatrix(mr);
+            printf("Matrix la Sdoble\n");
+            printMatrix(mdobleS);
             printf("Matrix la S\n");
             printMatrix(ms);
             printf("Matrix la RW\n");
