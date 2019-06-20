@@ -368,8 +368,11 @@ int rankOfMatrix(matrix * mtx)
         if (elem != 0) {
             for (int col = 1; col <= R; col++) {
                 if (col != row) {
+                    double mult = (double) ELEM(mtx,col,row) /
+                                  ELEM(mtx,row,row);
+
                     for (int i = 1; i <= rank; i++){
-                        ELEM(mtx,col,i) -= ELEM(mtx,row,i);
+                        ELEM(mtx,col,i) -= mult * ELEM(mtx,row,i);
                     }
                 }
             }
@@ -802,7 +805,6 @@ matrix * generateRandomMatrix(int rows, int cols) {
             setElement(result, i, j, nextChar());
     return result;
 }
-
 
 
 
