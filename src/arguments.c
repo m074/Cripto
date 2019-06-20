@@ -128,26 +128,37 @@ void distribute(Configuration* cfg){
     Img** sh_images = read_images_from_dir(cfg->dir,n); //hay N imagenes
 
     for(int i=0;i<getQuantiyMatrixS(s_image,n);i++){
-
         matrix* ma=newMatrixA(n,k);
         matrix* mdoubles=newMatrixS(ma);
-
         matrix* ms=getMatrixS(s_image,i,n);
         matrix* mw=getMatrixS(m_image,i,n);
-
         matrix* mr=newMatrixR(ms,mdoubles);
-
         matrix* mrw = newMatrixRW(mw,mdoubles);
-
         matrixCol* mcg = generateAllMatrixG(n,cs,mr);
-
         matrixCol* vectorsX=getVectorsX(k,n);
         matrixCol* vectorsV=getVectorsV(ma,vectorsX);
-        matrixCol* shadows = getMatrixColSh(vectorsV,mcg);
+        matrixCol* mcs = getMatrixColSh(vectorsV,mcg);
 
+        for(int s=0;s<mcs->size;s++){
 
-        for(int s=0;s<shadows->size;s++){
-            putMatrixSh(sh_images[s],shadows->matrixes[s],i,n);
+//            printMatrix(getMatrixSh(sh_images[s],i,n));
+            putMatrixSh(sh_images[s],mcs->matrixes[s],i,n);
+//            printf("la que quiero poner\n");
+//            printMatrix(mcs->matrixes[s]);
+//            printf("imagen modificada\n");
+//            printMatrix(getMatrixSh(sh_images[s],i,n));
+
+        }
+
+        if(i==0){
+            printf("Matrix la S\n");
+            printMatrix(ms);
+            printf("Matrix la RW\n");
+            printMatrix(mrw);
+            for(int kk=0;kk<mcs->size;kk++){
+                printf("Shadow\n");
+                printMatrix(mcs->matrixes[kk]);
+            }
         }
 
 
@@ -163,13 +174,16 @@ void distribute(Configuration* cfg){
         deleteMatrixCol(mcg);
         deleteMatrixCol(vectorsX);
         deleteMatrixCol(vectorsV);
-        deleteMatrixCol(shadows);
+        deleteMatrixCol(mcs);
+
 
     }
     writefile(m_image->bb,"alaa.bmp"); //TODO RW IMAGE
-    for(int sh=0;sh<n;sh++){
-        writefile(sh_images[sh]->bb,sh_images[sh]->filename);
+
+    for(int ar=0;ar<n;ar++){
+        writefile(sh_images[ar]->bb,sh_images[ar]->filename);
     }
+
 
     deleteImg(s_image);
     deleteImg(m_image);
@@ -214,6 +228,17 @@ void recover(Configuration* cfg){
 
         putMatrixS(s_image,ms,i,n);
         putMatrixS(w_image,mw,i,n);
+
+        if(i==0){
+            printf("Matrix la S\n");
+            printMatrix(ms);
+            printf("Matrix la RW\n");
+            printMatrix(mrw);
+            for(int kk=0;kk<mcsh->size;kk++){
+                printf("Shadow\n");
+                printMatrix(mcsh->matrixes[kk]);
+            }
+        }
 
         deleteMatrix(ms);
         deleteMatrix(mb);

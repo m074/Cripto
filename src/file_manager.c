@@ -18,7 +18,6 @@ BBuffer* readfile(char* filename){
 
     if (fread(bb->p, 1, bb->length, fd) != (size_t)bb->length){
 
-    //    if (fread(bb->p, 1, bb->length, fd) != bb->length){
         return NULL;
     }
 

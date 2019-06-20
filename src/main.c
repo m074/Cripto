@@ -7,88 +7,59 @@
 #include "utilities.h"
 #include <math.h>
 
-//
-//int main(int argc, char *argv[]){
-//    Configuration* cfg = parse_options(argc,argv);
-////    printf("m_image: %s\n",cfg->m_image_name);
-//    cfg->d_mode=1;
-//
-//    Img* bmp = read_bmp("Marca.bmp");
-//
-//    int a=writefile(bmp->bb,"lala.bmp");
-//    printf("%d",a);
-//
-//    printf("%d %d \n", bmp->height, bmp->width);
-//    matrix* m =getSmatrix(bmp,0,4);
-//    set_bits(bmp,0,2,2);
-//    int asda=get_bits(bmp,0,2);
-//    printMatrix(m);
-//
-//    printf("%d \n",asda);
-//
-//    exit(EXIT_SUCCESS);
-//}
+
 
 int main(int argc, char *argv[]){
     parse_options(argc,argv);
-//    matrix* sh1=newMatrixA(4,3);
-//    setElement(sh1,1,1,62);
-//    setElement(sh1,1,2,36);
-//    setElement(sh1,1,3,92);
+//    int cs[8]={1,2,3,4,5,6,7,8};
+//    int n=4;
+//    int k=2;
+//    matrix* ma=newMatrixA(n,k);
+//    matrix* mdoubles=newMatrixS(ma);
 //
-//    setElement(sh1,2,1,59);
-//    setElement(sh1,2,2,101);
-//    setElement(sh1,2,3,58);
+//    matrix* ms=generateRandomMatrix(n,n);
+//    setElement(ms,1,1,123);
+//    setElement(ms,1,2,241);
+//    matrix* mw=generateRandomMatrix(n,n);
 //
-//    setElement(sh1,3,1,43);
-//    setElement(sh1,3,2,126);
-//    setElement(sh1,3,3,142);
+//    setElement(mw,3,3,13);
 //
-//    setElement(sh1,4,1,84);
-//    setElement(sh1,4,2,26);
-//    setElement(sh1,41,3,163);
+//    matrix* mr=newMatrixR(ms,mdoubles);
 //
-//    matrix* sh2=newMatrixA(4,3);
-//    setElement(sh2,1,1,40);
-//    setElement(sh2,1,2,71);
-//    setElement(sh2,1,3,132);
+//    matrix* mrw = newMatrixRW(mw,mdoubles);
 //
-//    setElement(sh2,2,1,28);
-//    setElement(sh2,2,2,169);
-//    setElement(sh2,2,3,47);
+//    matrixCol* mcg = generateAllMatrixG(n,cs,mr);
 //
-//    setElement(sh2,3,1,28);
-//    setElement(sh2,3,2,198);
-//    setElement(sh2,3,3,72);
+//    matrixCol* vectorsX=getVectorsX(k,n);
+//    matrixCol* vectorsV=getVectorsV(ma,vectorsX);
+//    matrixCol* shadows = getMatrixColSh(vectorsV,mcg);
 //
-//    setElement(sh2,4,1,48);
-//    setElement(sh2,4,2,14);
-//    setElement(sh2,41,3,150);
-//
-//    printMatrix(sh1);
-//    printf("\n");
-//    printMatrix(sh2);
-//    printf("\n");
-//    matrix * b = newMatrixB(sh1,sh2);
-//    printMatrix(b);
-//    printf("\n");
-//    printMatrix(newMatrixS(b));
-//    printf("PRINTING G1\n");
-//    matrix * G1 = subMatrix(sh1, 1);
-//    printMatrix(G1);
-//    printf("\n");
-//    matrix * G2 = subMatrix(sh2, 1);
-//    printMatrix(G2);
-//    printf("\n");
-//
-//    int32_t c[2] = {1,2};
-//    matrixCol * mCol = newMatrixCol(2);
-//    mCol->matrixes[0] = G1;
-//    mCol->matrixes[1] = G2;
-//
-//    printMatrix(recoverMatrixR(mCol, c));
+//    //desencripcion
 //
 //
-//    exit(EXIT_SUCCESS);
+//    matrix* mb=newMatrixB(shadows);
+//    matrix* mdobleS=newMatrixS(mb);
+//
+//    matrixCol* mcg2 =getMatrixColG(shadows,k);
+//
+//
+//    matrix* new_mr = recoverMatrixR(mcg2,cs);
+//
+//    matrix* new_ms= recoverMatrixS(mdobleS,mr);
+//
+//    matrix* new_mw = recoverMatrixS(mdobleS,mrw);
+//
+//    printf("Matrix origianl S\n");
+//    printMatrix();
+//
+//
+//    printf("Matrix nueva S\n");
+//    printMatrix(new_ms);
+
+
+
+
+
+    exit(EXIT_SUCCESS);
 }
 

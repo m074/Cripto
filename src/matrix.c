@@ -416,7 +416,6 @@ void multiplyByScalar(matrix * mtx, int32_t scalar){
 
 matrix * newMatrixA(int n, int k) {
     int i, j;
-    int primes[]={2,    3,    5,   7,   11,   13,   17,   19,   23,  29};
     matrix * mtx = newMatrix(n, k);
     matrix * prod = NULL;
     setSeed(time(0));
