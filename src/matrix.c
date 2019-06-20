@@ -397,6 +397,52 @@ int rankOfMatrix(matrix * mtx)
 	return rank;
 }
 
+int32_t randomNum(){
+    int32_t elem = 0;
+    while(elem == 0){
+        elem = nextCharLimit(251);
+    }
+    return elem;
+}
+
+int32_t randomNumNormalized(int mult) {
+//    printf("MULT:%d\n", mult);
+    int32_t elem = 0;
+    while(elem == 0){
+        elem = nextCharLimit(251/mult);
+    }
+//    printf("ELEM: %d, ELEM * MULT: %d\n", elem, elem * mult);
+    return elem;
+}
+
+void rankOfMatrix2(matrix * mtx, int rank)
+{
+    int i,j;
+    identity(mtx);
+    int32_t * cols = (int32_t *) malloc((mtx->cols)*sizeof(int32_t));
+    for(i = 0; i < mtx->cols; i++){
+        cols[i] = randomNumNormalized(mtx->rows - rank);
+    }
+    for(i = 1; i <= mtx->rows; i++){
+        for(j = 1; j <=mtx->cols; j++){
+            if(i == j && j <= rank){
+                ELEM(mtx, i,j) = randomNum();
+            }
+            if(i==rank && j >= rank) {
+                ELEM(mtx, i,j) = randomNum();
+            }
+            if(i == j && j > rank) {
+                ELEM(mtx, i,j) = nextChar();
+            }
+            if(i > rank) {
+                ELEM(mtx, i,j) = (i - rank) * cols[j-1];
+            }
+        }
+    }
+    free(cols);
+    printMatrix(mtx);
+}
+
 bool invertible(matrix * mtx) {
     int i;
     for(i = 1; i <= mtx->cols; i++){
@@ -418,32 +464,9 @@ void multiplyByScalar(matrix * mtx, int32_t scalar){
 }
 
 matrix * newMatrixA(int n, int k) {
-    int i, j;
     matrix * mtx = newMatrix(n, k);
-    matrix * prod = NULL;
     setSeed(time(0));
-    do {
-        if(prod!=NULL){
-            deleteMatrix(prod);
-        }
-        int inx=0;
-        for(i = 1; i <= n; i++)
-            for(j = 1; j <= k; j++){
-            setElement(mtx, i,j, nextChar()); //TODO HARDCODED
-            inx++;
-            if(inx>9){
-                inx=0;
-            }
-        }
-        matrix * mtxTransposed = newMatrix(k,n);
-        prod = newMatrix(n,n);
-        transpose(mtx,mtxTransposed);
-        product(mtx,mtxTransposed,prod);
-        deleteMatrix(mtxTransposed);
-
-    } while(rankOfMatrix(mtx) != k && invertible(prod));
-    normalize(mtx);
-    deleteMatrix(prod);
+    rankOfMatrix2(mtx, k);
     return mtx;
 }
 
@@ -566,6 +589,8 @@ matrix * newMatrixS(matrix * a) {
 
     normalize(aataInvat);
 
+    printf("MATRIZ S DOBLE\n");
+    printMatrix(aataInvat);
     return aataInvat;
 }
 

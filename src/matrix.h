@@ -109,4 +109,6 @@ void deleteMatrixCol(matrixCol* mc);
 
 matrix * generateRandomMatrix(int rows, int cols);
 
+void rankOfMatrix2(matrix * mtx, int rank);
+
 #endif //CRIPTO_MATRIX_H
