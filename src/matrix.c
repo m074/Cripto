@@ -613,17 +613,17 @@ matrix* recoverMatrixS(matrix* mdobles, matrix* mr){
 
 matrixCol* getVectorsX(int size, int quantity){
     matrixCol *mc=newMatrixCol(quantity);
-    matrix* m = newMatrixA(quantity,size);
-    for(int r=0;r<quantity;r++){
-//        mc->matrixes[r]=malloc(sizeof(matrix*));
-        mc->matrixes[r]=newMatrix(size,1);
+    matrix* m = newMatrixA(size,quantity);
+    for(int i=0;i<quantity;i++){
+        mc->matrixes[i]=newMatrix(size,1);
         for(int j=1;j<=size;j++){
-            ELEM(mc->matrixes[r],j,1)=ELEM(m,r+1,j);
+            ELEM(mc->matrixes[i],j,1)=ELEM(m,j,i+1);
         }
     }
     deleteMatrix(m);
     return mc;
 }
+
 
 matrixCol* getVectorsV(matrix* ma, matrixCol* xv){
     matrixCol *mc=newMatrixCol(xv->size);
