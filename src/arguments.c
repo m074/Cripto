@@ -2,7 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "general.h"
+
 int cs[8]={1,2,3,4,5,6,7,8};
 
 
@@ -121,6 +123,8 @@ void select_mode(Configuration* cfg){
 
 
 void distribute(Configuration* cfg){
+
+
     int n= cfg->number_n;
     int k= cfg->number_k;
     Img* s_image  = read_bmp(cfg->s_image_name);
@@ -145,8 +149,6 @@ void distribute(Configuration* cfg){
         }
 
         if(i==0){
-            printf("Matrix la R\n");
-            printMatrix(mr);
             printf("Matrix la Sdoble\n");
             printMatrix(mdoubles);
             printf("Matrix la S\n");
@@ -210,7 +212,7 @@ void recover(Configuration* cfg){
             mcsh->matrixes[s]=getMatrixSh(sh_images[s],i,n);
         }
 
-        matrix* mb=newMatrixB(mcsh);
+        matrix* mb=newMatrixB(mcsh,k);
         matrix* mdobleS=newMatrixS(mb);
 
         matrixCol* mcg =getMatrixColG(mcsh,k);

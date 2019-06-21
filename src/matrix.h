@@ -81,7 +81,7 @@ matrixCol * generateAllMatrixG(int size, int32_t * c, matrix * r);
 
 matrixCol * newMatrixCol(int size);
 
-matrix* newMatrixB(matrixCol* mc);
+matrix* newMatrixB(matrixCol* mc, int k);
 
 matrix * subMatrix(matrix * m, int col);
 

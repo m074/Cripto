@@ -115,6 +115,7 @@ matrix* getMatrixS(Img* img, int number,int size){
             pos+=1;
         }
     }
+    normalize(m);
     return m;
 }
 

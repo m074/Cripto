@@ -440,7 +440,7 @@ void rankOfMatrix2(matrix * mtx, int rank)
         }
     }
     free(cols);
-    printMatrix(mtx);
+//    printMatrix(mtx);
 }
 
 bool invertible(matrix * mtx) {
@@ -464,8 +464,38 @@ void multiplyByScalar(matrix * mtx, int32_t scalar){
 }
 
 matrix * newMatrixA(int n, int k) {
-    matrix * mtx = newMatrix(n, k);
+    matrix *mtx = newMatrix(n, k);
     rankOfMatrix2(mtx, k);
+    int a=nextChar()%245;
+    if(a>=1)
+        a=2;
+
+    for(int i=1;i<=mtx->cols;i++){
+        setElement(mtx, 1, i, 1); // DEBUG
+        setElement(mtx, 2, i, a); // DEBUG
+        setElement(mtx, 3, i, a*a);
+        setElement(mtx, 4, i, a*a*a); // DEBUG
+        a+=1;
+    }
+
+
+
+
+//    for (int i = 1; i <= mtx->rows; i++){
+//        for (int j = 1; j <= mtx->cols; j++) {
+//                ELEM(mtx, i, j) = nextChar()%251;
+//        }
+//    }
+//    matrix* matrix = mtx;
+//    setElement(matrix, 0+1, 0+1, 3); // DEBUG
+//    setElement(matrix, 0+1, 1+1, 7); // DEBUG
+//    setElement(matrix, 1+1, 0+1, 6); // DEBUG
+//    setElement(matrix, 1+1, 1+1, 1); // DEBUG
+//    setElement(matrix, 2+1, 0+1, 2); // DEBUG
+//    setElement(matrix, 2+1, 1+1, 5); // DEBUG
+//    setElement(matrix, 3+1, 0+1, 6); // DEBUG
+//    setElement(matrix, 3+1, 1+1, 6); // DEBUG
+ normalize(mtx);
     return mtx;
 }
 
@@ -524,6 +554,7 @@ int32_t determinant(matrix * a) {
             det += sign * ELEM(a,i,1) * determinant(aux);
             sign = -sign;
         }
+        deleteMatrix(aux);
     }
     return(det);
 }
@@ -588,8 +619,8 @@ matrix * newMatrixS(matrix * a) {
 
     normalize(aataInvat);
 
-    printf("MATRIZ S DOBLE\n");
-    printMatrix(aataInvat);
+//    printf("MATRIZ S DOBLE\n");
+//    printMatrix(aataInvat);
     return aataInvat;
 }
 
@@ -613,6 +644,10 @@ matrix* recoverMatrixS(matrix* mdobles, matrix* mr){
 matrixCol* getVectorsX(int size, int quantity){
     matrixCol *mc=newMatrixCol(quantity);
     int a = nextChar() %251;
+    if(a<=1 || a>=245){
+        a=2;
+    }
+//    a=3;
     for(int i=0;i<quantity;i++){
         mc->matrixes[i]=newMatrix(size,1);
         int prev=1;
@@ -622,6 +657,7 @@ matrixCol* getVectorsX(int size, int quantity){
         }
        a= (a+1)%251;
     }
+
     return mc;
 }
 
@@ -659,16 +695,17 @@ matrixCol * generateAllMatrixG(int size, int32_t * c, matrix * r) {
     matrixCol * mc = newMatrixCol(size);
     for(i = 0; i < size; i++){
         mc->matrixes[i] = newMatrixG(r, c[i]);
+        normalize(mc->matrixes[i]);
     }
     return mc;
 }
 
 
-matrix* newMatrixB(matrixCol* mc){
-    matrix * b = newMatrix(mc->matrixes[0]->rows, 2); //TODO FIX MAGIC NUMBER
+matrix* newMatrixB(matrixCol* mc, int k){
+    matrix * b = newMatrix(mc->matrixes[0]->rows, k); //TODO FIX MAGIC NUMBER
 
     for(int i = 1; i <= mc->matrixes[0]->rows; i++){
-        for(int j = 0; j<2;j++){
+        for(int j = 0; j<k;j++){
             setElement(b, i, j+1, ELEM(mc->matrixes[j], i,1));
         }
     }
@@ -713,6 +750,7 @@ matrix* recoverMatrixR(matrixCol* allG, int32_t* c){
                 ELEM(mr,i,(rsmall->rows)*(j-1)+k)= ELEM(rsmall,k,1);
             }
             deleteMatrix(rsmall);
+
         }
     }
     normalize(mr);
@@ -734,6 +772,7 @@ matrix * getrsmall(matrixCol * allG, int32_t * c, int x, int y) {
             setElement(cMatrix, i, 3, c[i-1] * c[i-1]);
             setElement(cMatrix, i, 4, c[i-1] * c[i-1] * c[i-1]);
         }
+
     }
 
 //    printMatrix(cMatrix);
