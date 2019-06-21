@@ -268,7 +268,7 @@ int product(matrix * mtx1, matrix * mtx2, matrix * prod) {
 	int row, col, k;
 	for (col = 1; col <= mtx2->cols; col++)
 		for (row = 1; row <= mtx1->rows; row++) {
-            int32_t val = 0;
+            int64_t val = 0;
 			for (k = 1; k <= mtx1->cols; k++)
 				val += (ELEM(mtx1, row, k) * ELEM(mtx2, k, col))%251;
 			ELEM(prod, row, col) = val;
@@ -357,6 +357,8 @@ static void swap(matrix * mtx, int row1, int row2, int col)
 		ELEM(mtx,row2,i) = temp;
 	}
 }
+
+
 
 int rankOfMatrix(matrix * mtx)
 {
@@ -642,8 +644,8 @@ matrix* recoverMatrixS(matrix* mdobles, matrix* mr){
 
 matrixCol* getVectorsX(int size, int quantity){
     matrixCol *mc=newMatrixCol(quantity);
-    int a = nextChar() %251;
-    if(a<=1 || a>=245){
+    int a = nextChar() %130;
+    if(a<=1 || a>=127){
         a=3;
     }
 //    a=3;
@@ -786,21 +788,21 @@ matrix * getrsmall(matrixCol * allG, int32_t * c, int x, int y) {
 }
 
 matrix * solveEquations(matrix * m, matrix * g) {
-    int i, count;
+    int i;
     matrix * results = newMatrix(m->rows, 1);
 
 
     int det = determinant(m);
-    for(count = 1; count <= m->cols; count++) {
+    for(int j = 1; j <= m->cols; j++) {
         matrix * copy = copyMatrix(m);
         for(i = 1; i <= m->rows; i++){
-            ELEM(copy, count, i) = ELEM(g,i,1);
+            ELEM(copy, i, j) = ELEM(g,i,1);
         }
+
         int64_t dx = determinant(copy);
         deleteMatrix(copy);
-        ELEM(results,count,1)=dx/det;
+        ELEM(results,j,1)=round(dx/det);
     }
-
     return results;
 }
 

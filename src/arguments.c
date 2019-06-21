@@ -202,7 +202,8 @@ void recover(Configuration* cfg){
 
         if(i==0){
 
-
+            printf("Matrix la B\n");
+            printMatrix(mb);
             printf("Matrix la R\n");
             printMatrix(mr);
             printf("Matrix la Sdoble\n");
@@ -214,6 +215,11 @@ void recover(Configuration* cfg){
             for(int kk=0;kk<mcsh->size;kk++){
                 printf("Shadow\n");
                 printMatrix(mcsh->matrixes[kk]);
+            }
+
+            for(int kk=0;kk<mcsh->size;kk++){
+                printf("gg\n");
+                printMatrix(mcg->matrixes[kk]);
             }
         }
 

@@ -13,9 +13,9 @@ int main(int argc, char *argv[]){
     setSeed(time(0));
 
     parse_options(argc,argv);
+
 //
-//
-//    int cs[8] = {1, 2, 3, 4, 5, 6, 7, 8};
+//    int cs[] = {1, 2, 3, 4, 5, 6, 7, 8};
 //    int n = 8;
 //    int k = n/2 ;
 //    matrix *ma = newMatrixA(n, k);
@@ -23,9 +23,8 @@ int main(int argc, char *argv[]){
 //
 //    matrix *ms = generateRandomMatrix(n, n);
 //    normalize(ms);
-//    setElement(ms, 1, 1, 200);
-//    setElement(ms, 2, 1, 200);
-//    setElement(ms, 3, 1, 200);
+//
+//
 //
 //    setElement(ms, 1, 2, 241);
 //    matrix *mw = generateRandomMatrix(n, n);
@@ -55,21 +54,6 @@ int main(int argc, char *argv[]){
 //
 //    matrix *new_ms = recoverMatrixS(mdobleS, mr);
 //
-//    printf("Matrix a\n");
-//    printMatrix(ma);
-//
-//    for(int gg=0;gg<vectorsV->size;gg++){
-//        printf("xx\n");
-//        printMatrix(vectorsX->matrixes[gg]);
-//
-//    }
-//
-//    for(int gg=0;gg<vectorsV->size;gg++){
-//        printf("vv\n");
-//        printMatrix(vectorsV->matrixes[gg]);
-//
-//    }
-//
 //
 //
 //
@@ -83,7 +67,13 @@ int main(int argc, char *argv[]){
 //    do{
 //        c+=1;
 //      ma = newMatrixA(n, k);
-//       mdoubles = newMatrixS(ma);
+////        setElement(ma, 1, 1, 93);
+////        setElement(ma, 2, 2, 109);
+////        setElement(ma, 3, 1, 15);
+////        setElement(ma, 3, 2, 16);
+////        setElement(ma, 4, 1, 30);
+////        setElement(ma, 4, 2, 32);
+//        mdoubles = newMatrixS(ma);
 //
 //      ms = generateRandomMatrix(n, n);
 //        normalize(ms);
@@ -92,31 +82,44 @@ int main(int argc, char *argv[]){
 //        setElement(ms, 3, 1, 200);
 //
 //        setElement(ms, 1, 2, 241);
-//mw = generateRandomMatrix(n, n);
+//
+//        for(int i=1;i<=ms->rows;i++){
+//            for(int j=1;j<=ms->cols;j++){
+//                setElement(ms, i, j, 2);
+//            }
+//        }
+//    mw = generateRandomMatrix(n, n);
 //
 //        setElement(mw, 3, 3, 13);
 //
-//mr = newMatrixR(ms, mdoubles);
+//    mr = newMatrixR(ms, mdoubles);
 //
-//mcg = generateAllMatrixG(n, cs, mr);
+//    mcg = generateAllMatrixG(n, cs, mr);
 //
-//vectorsX = getVectorsX(k, n);
-//vectorsV = getVectorsV(ma, vectorsX);
-//shadows = getMatrixColSh(vectorsV, mcg);
+//    vectorsX = getVectorsX(k, n);
+////
+////        int b=163;
+////        for(int bb=0;bb<vectorsX->size;bb++){
+////            setElement(vectorsX->matrixes[bb], 2, 1, b);
+////            b+=1;
+////        }
+//
+//    vectorsV = getVectorsV(ma, vectorsX);
+//    shadows = getMatrixColSh(vectorsV, mcg);
 //
 //        //desencripcion
 //
 //
-//mb = newMatrixB(shadows,k);
-//mdobleS = newMatrixS(mb);
+//    mb = newMatrixB(shadows,k);
+//    mdobleS = newMatrixS(mb);
 //
-//mcg2 = getMatrixColG(shadows, k);
-//
-//
-//new_mr = recoverMatrixR(mcg2, cs);
+//    mcg2 = getMatrixColG(shadows, k);
 //
 //
-//new_ms = recoverMatrixS(mdobleS, mr);
+//    new_mr = recoverMatrixR(mcg2, cs);
+//
+//
+//    new_ms = recoverMatrixS(mdobleS, mr);
 //
 //        printf("Matrix a\n");
 //        printMatrix(ma);
@@ -136,7 +139,7 @@ int main(int argc, char *argv[]){
 //
 //
 //
-//    }while(ELEM(ms,1,1)==ELEM(new_ms,1,1));
+//    }while(ELEM(ms,1,1)==ELEM(new_ms,1,1) && false );
 //
 //
 //    printf("Matrix b\n");
@@ -175,7 +178,7 @@ int main(int argc, char *argv[]){
 //
 //    printf("Matrix ata\n");
 //    printMatrix(ata);
-//    printf("deter %d\n",determinant(ata)%251);
+//    printf("deter %ld\n",determinant(ata));
 //
 //    printf("Veces que fallo: %d\n",c);
 //    if(new_mr==NULL){new_mr=NULL;};

@@ -106,6 +106,21 @@ u_int8_t get_bits(Img* img,u_int32_t pos, int bits){
     return c;
 }
 
+
+void reduceto251(matrix * m){
+    int i,j;
+    for(i = 1; i <= m->rows; i++)
+        for(j = 1; j <= m->cols; j++){
+            if(ELEM(m,i,j) >=250 ){
+                ELEM(m, i, j) = 250;
+            }
+            if(ELEM(m,i,j) == 0 ){
+                ELEM(m, i, j) = 1;
+            }
+        }
+}
+
+
 matrix* getMatrixS(Img* img, int number,int size){
     matrix* m = newMatrix(size,size);
     __uint8_t* pos = img->bb->p + img->offset + (number*size*size);
@@ -115,7 +130,7 @@ matrix* getMatrixS(Img* img, int number,int size){
             pos+=1;
         }
     }
-    normalize(m);
+    reduceto251(m);
     return m;
 }
 
