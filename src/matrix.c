@@ -270,7 +270,7 @@ int product(matrix * mtx1, matrix * mtx2, matrix * prod) {
 		for (row = 1; row <= mtx1->rows; row++) {
             int32_t val = 0;
 			for (k = 1; k <= mtx1->cols; k++)
-				val += ELEM(mtx1, row, k) * ELEM(mtx2, k, col);
+				val += (ELEM(mtx1, row, k) * ELEM(mtx2, k, col))%251;
 			ELEM(prod, row, col) = val;
 		}
 	return 0;
@@ -466,17 +466,15 @@ void multiplyByScalar(matrix * mtx, int32_t scalar){
 matrix * newMatrixA(int n, int k) {
     matrix *mtx = newMatrix(n, k);
     rankOfMatrix2(mtx, k);
-    int a=nextChar()%245;
-    if(a>=1)
-        a=2;
-
-    for(int i=1;i<=mtx->cols;i++){
-        setElement(mtx, 1, i, 1); // DEBUG
-        setElement(mtx, 2, i, a); // DEBUG
-        setElement(mtx, 3, i, a*a);
-        setElement(mtx, 4, i, a*a*a); // DEBUG
-        a+=1;
-    }
+//
+//    for(int j=1;j<=mtx->cols;j++){
+//        int tmp=1;
+//        for(int i=1;i<=mtx->rows;i++){
+//            setElement(mtx, i, j, tmp); // DEBUG
+////            tmp=tmp*a;
+//        }
+//        a+=1;
+//    }
 
 
 
@@ -510,8 +508,8 @@ void normalize(matrix * m){
         }
 }
 
-int32_t determinant(matrix * a) {
-    int det = 0 ;                   // init determinant
+int64_t determinant(matrix * a) {
+    int64_t det = 0 ;                   // init determinant
     // square array
     int n = a->rows;
 
@@ -604,10 +602,12 @@ matrix * newMatrixS(matrix * a) {
     transpose(a, at);
     ata = newMatrix(at->rows, a->cols);
     product(at, a, ata);
+    normalize(ata);
     ataInv = inverse(ata);
 
     aataInv = newMatrix(a->rows, ataInv->cols);
     product(a, ataInv, aataInv);
+    normalize(aataInv);
 
     aataInvat = newMatrix(aataInv->rows, at->cols);
     product(aataInv, at, aataInvat);
@@ -619,8 +619,7 @@ matrix * newMatrixS(matrix * a) {
 
     normalize(aataInvat);
 
-//    printf("MATRIZ S DOBLE\n");
-//    printMatrix(aataInvat);
+
     return aataInvat;
 }
 
@@ -645,7 +644,7 @@ matrixCol* getVectorsX(int size, int quantity){
     matrixCol *mc=newMatrixCol(quantity);
     int a = nextChar() %251;
     if(a<=1 || a>=245){
-        a=2;
+        a=3;
     }
 //    a=3;
     for(int i=0;i<quantity;i++){
@@ -709,6 +708,7 @@ matrix* newMatrixB(matrixCol* mc, int k){
             setElement(b, i, j+1, ELEM(mc->matrixes[j], i,1));
         }
     }
+    normalize(b);
     return b;
 }
 
@@ -796,7 +796,7 @@ matrix * solveEquations(matrix * m, matrix * g) {
         for(i = 1; i <= m->rows; i++){
             ELEM(copy, count, i) = ELEM(g,i,1);
         }
-        int dx = determinant(copy);
+        int64_t dx = determinant(copy);
         deleteMatrix(copy);
         ELEM(results,count,1)=dx/det;
     }

@@ -65,7 +65,7 @@ bool invertible(matrix * mtx);
 
 matrix * inverse(matrix * mtx);
 
-int32_t determinant(matrix * a);
+int64_t determinant(matrix * a);
 
 matrix * newMatrixS(matrix * a);
 
