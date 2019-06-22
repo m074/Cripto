@@ -13,7 +13,7 @@ int main(int argc, char *argv[]){
     setSeed(time(0));
 
     parse_options(argc,argv);
-
+//
 //
 //    int cs[] = {1, 2, 3, 4, 5, 6, 7, 8};
 //    int n = 8;
@@ -119,27 +119,29 @@ int main(int argc, char *argv[]){
 //    new_mr = recoverMatrixR(mcg2, cs);
 //
 //
-//    new_ms = recoverMatrixS(mdobleS, mr);
-//
-//        printf("Matrix a\n");
-//        printMatrix(ma);
-//
-//        for(int gg=0;gg<vectorsV->size;gg++){
-//            printf("xx\n");
-//            printMatrix(vectorsX->matrixes[gg]);
-//
-//        }
-//
-//        for(int gg=0;gg<vectorsV->size;gg++){
-//            printf("vv\n");
-//            printMatrix(vectorsV->matrixes[gg]);
-//
-//        }
+//    new_ms = recoverMatrixS(mdobleS, new_mr);
 //
 //
 //
 //
-//    }while(ELEM(ms,1,1)==ELEM(new_ms,1,1) && false );
+//
+//    }while(ELEM(ms,1,1)==ELEM(new_ms,1,1));
+//
+//    printf("Matrix a\n");
+//    printMatrix(ma);
+//
+//    for(int gg=0;gg<vectorsV->size;gg++){
+//        printf("xx\n");
+//        printMatrix(vectorsX->matrixes[gg]);
+//
+//    }
+//
+//    for(int gg=0;gg<vectorsV->size;gg++){
+//        printf("vv\n");
+//        printMatrix(vectorsV->matrixes[gg]);
+//
+//    }
+//
 //
 //
 //    printf("Matrix b\n");

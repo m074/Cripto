@@ -271,6 +271,7 @@ int product(matrix * mtx1, matrix * mtx2, matrix * prod) {
             int64_t val = 0;
 			for (k = 1; k <= mtx1->cols; k++)
 				val += (ELEM(mtx1, row, k) * ELEM(mtx2, k, col))%251;
+			    val = val%251;
 			ELEM(prod, row, col) = val;
 		}
 	return 0;
@@ -584,7 +585,7 @@ matrix * inverse(matrix * a) {
     }
     matrix * t = newMatrix(a->rows, a->cols);
     transpose(ans, t);
-    int32_t scalar = determinant(a);
+    int64_t scalar = determinant(a);
     if(scalar > 251 || scalar < 0){
         scalar = multiplicativeInverse(scalar);
     }
@@ -758,6 +759,15 @@ matrix* recoverMatrixR(matrixCol* allG, int32_t* c){
     normalize(mr);
     return mr;
 }
+
+matrix * solveEquations2(matrix * m, matrix * g) {
+    matrix * results = newMatrix(m->rows, 1);
+    matrix* minv=inverse(m);
+    product(minv,g,results);
+    deleteMatrix(minv);
+    return results;
+}
+
 
 
 matrix * getrsmall(matrixCol * allG, int32_t * c, int x, int y) {
