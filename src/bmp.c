@@ -183,9 +183,6 @@ int getQuantiyMatrixS(Img* img,int n){
 
 void putMatrixSh(Img* img,matrix* sh,int pos, int n) {
     int32_t matrix_offset =n* n * 3 * pos;
-    if (n == 4) {
-        matrix_offset = 3*n*n * pos;
-    }
 
     int pasos = 2;
     if (n == 8) {
@@ -199,7 +196,6 @@ void putMatrixSh(Img* img,matrix* sh,int pos, int n) {
                 set_bits(img, matrix_offset, valor, pasos);
                 valor = valor << pasos;
                 matrix_offset += 1;
-
                 lala += 1;
             }
 
@@ -208,10 +204,7 @@ void putMatrixSh(Img* img,matrix* sh,int pos, int n) {
 
 }
 matrix* getMatrixSh(Img* img,int pos, int n){
-    int32_t  matrix_offset = n*n*3*pos;
-    if(n==4){
-        matrix_offset=3*n*n * pos;
-    }
+    int32_t  matrix_offset = n*3*n*pos;
     int pasos=2;
     if(n==8){
         pasos=1;

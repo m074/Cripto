@@ -13,9 +13,9 @@ int main(int argc, char *argv[]){
     setSeed(time(0));
 
     parse_options(argc,argv);
-//
-//
-//    int cs[] = {1, 2, 3, 4, 5, 6, 7, 8};
+
+
+//    int cs[] = {1, 2, 3, 4, 5, 6, 7, 8, 11};
 //    int n = 8;
 //    int k = n/2 ;
 //    matrix *ma = newMatrixA(n, k);
@@ -85,7 +85,7 @@ int main(int argc, char *argv[]){
 //
 //        for(int i=1;i<=ms->rows;i++){
 //            for(int j=1;j<=ms->cols;j++){
-//                setElement(ms, i, j, 2);
+//                setElement(ms, i, j, 128);
 //            }
 //        }
 //    mw = generateRandomMatrix(n, n);
@@ -119,13 +119,14 @@ int main(int argc, char *argv[]){
 //    new_mr = recoverMatrixR(mcg2, cs);
 //
 //
-//    new_ms = recoverMatrixS(mdobleS, new_mr);
+//    new_ms = recoverMatrixS(mdoubles, new_mr);
 //
 //
 //
 //
+//        printf("c es  %d\n",c);
 //
-//    }while(ELEM(ms,1,1)==ELEM(new_ms,1,1));
+//    }while(ELEM(ms,2,2)==ELEM(new_ms,2,2));
 //
 //    printf("Matrix a\n");
 //    printMatrix(ma);

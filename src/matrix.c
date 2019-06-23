@@ -555,6 +555,7 @@ int64_t determinant(matrix * a) {
             det += sign * ELEM(a,i,1) * determinant(aux);
             sign = -sign;
         }
+
         deleteMatrix(aux);
     }
     return(det);
@@ -645,11 +646,8 @@ matrix* recoverMatrixS(matrix* mdobles, matrix* mr){
 
 matrixCol* getVectorsX(int size, int quantity){
     matrixCol *mc=newMatrixCol(quantity);
-    int a = nextChar() %130;
-    if(a<=1 || a>=127){
-        a=3;
-    }
-//    a=3;
+    int a = nextChar() %251;
+
     for(int i=0;i<quantity;i++){
         mc->matrixes[i]=newMatrix(size,1);
         int prev=1;
@@ -657,7 +655,10 @@ matrixCol* getVectorsX(int size, int quantity){
             ELEM(mc->matrixes[i],j,1)=(prev)%251;
            prev= prev*a;
         }
-       a= (a+1)%251;
+        a= nextChar() %251;
+        if(a==1){
+            a=3;
+        }
     }
 
     return mc;
@@ -744,6 +745,7 @@ matrix * subMatrix(matrix * m, int col) {
 }
 
 
+
 matrix* recoverMatrixR(matrixCol* allG, int32_t* c){
     matrix * mr = newMatrix(allG->matrixes[0]->rows,allG->matrixes[0]->rows);
     for(int i=1;i<=mr->rows;i++){ // por las filas de g
@@ -753,7 +755,6 @@ matrix* recoverMatrixR(matrixCol* allG, int32_t* c){
                 ELEM(mr,i,(rsmall->rows)*(j-1)+k)= ELEM(rsmall,k,1);
             }
             deleteMatrix(rsmall);
-
         }
     }
     normalize(mr);
@@ -767,6 +768,9 @@ matrix * solveEquations2(matrix * m, matrix * g) {
     deleteMatrix(minv);
     return results;
 }
+
+
+
 
 
 
@@ -797,22 +801,126 @@ matrix * getrsmall(matrixCol * allG, int32_t * c, int x, int y) {
     return rot;
 }
 
+
+
 matrix * solveEquations(matrix * m, matrix * g) {
-    int i;
     matrix * results = newMatrix(m->rows, 1);
+//    for(int i=2;i<=m->rows;i++){ // por las filas de g
+//        ELEM(g,i,1)=ELEM(g,i,1)-ELEM(g,1,1);
+//
+//        for(int j=1;j<=m->cols;j++){
+//            ELEM(m,i,j)=ELEM(m,i,j)-ELEM(m,1,j);
+//        }
+//    }
+//
+//    for(int i=3;i<=m->rows;i++){ // por las filas de g
+//        ELEM(g,i,1)=ELEM(g,i,1)-ELEM(g,2,1)*(i-1);
+//
+//        for(int j=1;j<=m->cols;j++){
+//            ELEM(m,i,j)=ELEM(m,i,j)-ELEM(m,2,j)*(i-1);;
+//        }
+//    }
+//
+//    for(int i=4;i<=m->rows;i++){ // por las filas de g
+//        ELEM(g,i,1)=ELEM(g,i,1)-ELEM(g,3,1)*(i-1);
+//
+//        for(int j=1;j<=m->cols;j++){
+//            ELEM(m,i,j)=ELEM(m,i,j)-ELEM(m,3,j)*(i-1);;
+//        }
+//    }
+//if(m->rows==4){
+//    ELEM(g,3,1)=ELEM(g,3,1)-ELEM(g,4,1);
+//    for(int j=1;j<=m->cols;j++) {
+//        ELEM(m, 3, j) = ELEM(m, 3, j) - ELEM(m, 4, j);;
+//    }
+//
+//    ELEM(g,2,1)=ELEM(g,2,1)-ELEM(g,3,1);
+//    for(int j=1;j<=m->cols;j++) {
+//        ELEM(m, 2, j) = ELEM(m, 2, j) - ELEM(m, 3, j);;
+//    }
+//    ELEM(g,1,1)=ELEM(g,1,1)-ELEM(g,2,1);
+//
+//    for(int j=1;j<=m->cols;j++){
+//        ELEM(m,1,j)=ELEM(m,1,j)-ELEM(m,2,j);;
+//
+//    }
+//
+//}
+
+//    if(m->rows==4){
+//        for(int i=2;i<=3;i++){ // por las filas de g
+//            ELEM(g,i,1)=ELEM(g,i,1)-ELEM(g,4,1);
+//            for(int j=1;j<=m->cols;j++){
+//                ELEM(m,i,j)=ELEM(m,i,j)-ELEM(m,4,j);;
+//            }
+//        }
+//        for(int j=1;j<=m->cols;j++){
+//            ELEM(m,3,j)=ELEM(m,3,j)-ELEM(m,4,j);;
+//        }
+//        ELEM(g,4,1)=round(ELEM(g,4,1)/6);
+//        for(int j=1;j<=m->cols;j++){
+//            ELEM(m,4,j)=ELEM(m,4,j)/6;
+//        }
+//        ELEM(g,3,1)=round(ELEM(g,3,1)/2);
+//        for(int j=1;j<=m->cols;j++){
+//            ELEM(m,3,j)=ELEM(m,3,j)/2;
+//        }
+//        for(int i=1;i<=2;i++) { // por las filas de g
+//            ELEM(g, i, 1) = ELEM(g, i, 1) - ELEM(g, 4, 1);
+//            for (int j = 1; j <= m->cols; j++) {
+//                ELEM(m, i, j) = ELEM(m, i, j) - ELEM(m, 4, j);;
+//            }
+//        }
+//        for(int i=1;i<=2;i++){ // por las filas de g
+//            ELEM(g,i,1)=ELEM(g,i,1)-ELEM(g,3,1);
+//            for(int j=1;j<=m->cols;j++){
+//                ELEM(m,i,j)=ELEM(m,i,j)-ELEM(m,3,j);;
+//            }
+//        }
+//        for(int i=2;i<=2;i++){ // por las filas de g
+//            ELEM(g,i,1)=ELEM(g,i,1)-ELEM(g,3,1);
+//            for(int j=1;j<=m->cols;j++){
+//                ELEM(m,i,j)=ELEM(m,i,j)-ELEM(m,3,j);;
+//            }
+//        }
+//        for(int i=2;i<=2;i++){ // por las filas de g
+//            ELEM(g,i,1)=ELEM(g,i,1)-ELEM(g,3,1);
+//            for(int j=1;j<=m->cols;j++){
+//                ELEM(m,i,j)=ELEM(m,i,j)-ELEM(m,3,j);;
+//            }
+//        }
+//        for(int i=1;i<=1;i++){ // por las filas de g
+//            ELEM(g,i,1)=ELEM(g,i,1)-ELEM(g,2,1);
+//            for(int j=1;j<=m->cols;j++){
+//                ELEM(m,i,j)=ELEM(m,i,j)-ELEM(m,2,j);;
+//            }
+//        }
+//    }
+//    deleteMatrix(results);
+//    results=copyMatrix(g);
+//    return results;
 
 
-    int det = determinant(m);
+
+
+
+
+
+    int64_t det = determinant(m);
     for(int j = 1; j <= m->cols; j++) {
         matrix * copy = copyMatrix(m);
-        for(i = 1; i <= m->rows; i++){
+        for(int i = 1; i <= m->rows; i++){
             ELEM(copy, i, j) = ELEM(g,i,1);
         }
 
         int64_t dx = determinant(copy);
         deleteMatrix(copy);
-        ELEM(results,j,1)=round(dx/det);
+        ELEM(results,j,1)=dx * modInverse(det);
     }
+//    printMatrix(results);
+//    ELEM(results,4,1)=cache/6;
+//    printMatrix(results);
+
     return results;
 }
 

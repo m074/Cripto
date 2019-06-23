@@ -5,7 +5,7 @@
 #include <time.h>
 #include "general.h"
 
-int cs[8]={1,2,3,4,5,6,7,8};
+int cs[8]={2,3,4,5,6,7,8,11};
 
 
 void help();
@@ -102,7 +102,7 @@ void distribute(Configuration* cfg){
     Img* m_image  = read_bmp(cfg->m_image_name);
     Img** sh_images = read_images_from_dir(cfg->dir,n); //hay N imagenes
 
-    for(int i=0;i<getQuantiyMatrixS(s_image,n);i++){
+    for(int32_t i=0;i<getQuantiyMatrixS(s_image,n);i++){
         matrix* ma=newMatrixA(n,k);
         matrix* mdoubles=newMatrixS(ma);
         matrix* ms=getMatrixS(s_image,i,n);
@@ -149,7 +149,7 @@ void distribute(Configuration* cfg){
 
 
     }
-    writefile(m_image->bb,"alaa.bmp"); //TODO RW IMAGE
+    writefile(m_image->bb,"RW.bmp"); //TODO RW IMAGE
 
     for(int ar=0;ar<n;ar++){
         writefile(sh_images[ar]->bb,sh_images[ar]->filename);
@@ -177,7 +177,7 @@ void recover(Configuration* cfg){
     Img* w_image = copy_img(rw_image);
     change_filename(w_image,"watermark.bmp");
 
-    for(int i=0;i<getQuantiyMatrixS(rw_image,n);i++){
+    for(int32_t i=0;i<getQuantiyMatrixS(rw_image,n);i++){
         matrixCol* mcsh=newMatrixCol(k);
         for(int s=0;s<k;s++){
             mcsh->matrixes[s]=getMatrixSh(sh_images[s],i,n);
@@ -232,7 +232,7 @@ void recover(Configuration* cfg){
         deleteMatrixCol(mcg);
         deleteMatrixCol(mcsh);
     }
-    writefile(s_image->bb,"sss.bmp");
+    writefile(s_image->bb,s_image->filename);
     writefile(w_image->bb,w_image->filename);
 
     deleteImg(s_image);
