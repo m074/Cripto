@@ -270,7 +270,7 @@ int product(matrix * mtx1, matrix * mtx2, matrix * prod) {
 		for (row = 1; row <= mtx1->rows; row++) {
             int64_t val = 0;
 			for (k = 1; k <= mtx1->cols; k++){
-			    val+= modProd(ELEM(mtx1, row, k) ,ELEM(mtx2, k, col));
+			    val+= ELEM(mtx1, row, k) * ELEM(mtx2, k, col);
 			    val = val%251;
 			}
 			ELEM(prod, row, col) = val;
@@ -506,7 +506,7 @@ void normalize(matrix * m){
     for(i = 1; i <= m->rows; i++)
         for(j = 1; j <= m->cols; j++){
             while(ELEM(m,i,j) < 0){
-                ELEM(m, i, j) = ELEM(m,i,j) + 251;
+                ELEM(m, i, j) = ELEM(m,i,j) + 251* 1000;
             }
             ELEM(m,i,j) = ELEM(m,i,j) % 251;
         }
@@ -563,6 +563,7 @@ int64_t determinant(matrix * a) {
 }
 
 matrix * inverse(matrix * a) {
+
     matrix * ans = newMatrix(a->rows, a->cols);
     matrix * subMatrix = newMatrix(a->rows-1, a->cols-1);
     int i,j, i2, j2, cols, rows, sign;
@@ -791,9 +792,7 @@ matrix * getrsmall(matrixCol * allG, uint8_t * c, int x, int y) {
 
 matrix * solveEquations(matrix * m, matrix * g) {
     matrix * results = newMatrix(m->rows, 1);
-
-
-
+    normalize(m);
 
     int64_t det = determinant(m);
     for(int j = 1; j <= m->cols; j++) {

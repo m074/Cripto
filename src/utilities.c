@@ -14,7 +14,7 @@ void assure(int truth, char* message) {
 
 int modInverse(int i) {
     while(i<=0){
-        i+=251;
+        i+=251*1000;
     }
     i %= 251;
     if (i < 1 || i > 251) {
