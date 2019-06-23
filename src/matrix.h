@@ -33,10 +33,6 @@ int setElement(matrix * mtx, int row, int col, int32_t val);
 
 int getElement(matrix * mtx, int row, int col, int32_t * val);
 
-int nRows(matrix * mtx, int * n);
-
-int nCols(matrix * mtx, int * n);
-
 int printMatrix(matrix * mtx);
 
 int transpose(matrix * in, matrix * out);
@@ -44,10 +40,6 @@ int transpose(matrix * in, matrix * out);
 int sum(matrix * mtx1, matrix * mtx2, matrix * sum);
 
 int product(matrix * mtx1, matrix * mtx2, matrix * prod);
-
-int dotProduct(matrix * v1, matrix * v2, int32_t * prod);
-
-int identity(matrix * m);
 
 int isSquare(matrix * mtx);
 
@@ -57,11 +49,8 @@ int isUpperTriangular(matrix * mtx);
 
 int diagonal(matrix * v, matrix * mtx);
 
-int rankOfMatrix(matrix * mtx);
 
 matrix * newMatrixA(int n, int k);
-
-bool invertible(matrix * mtx);
 
 matrix * inverse(matrix * mtx);
 
@@ -95,8 +84,6 @@ matrix * newMatrixRW(matrix * w, matrix * doubleS);
 
 matrix * newMatrixSh(matrix * v, matrix * g);
 
-matrix * newSecretMatrixS(matrix * doubleS, matrix * r);
-
 matrixCol* getMatrixColSh(matrixCol* v,matrixCol* g);
 
 matrixCol* getMatrixColG(matrixCol* mcol_shadows, int k);
@@ -107,8 +94,5 @@ matrix* recoverMatrixS(matrix* mdobles, matrix* mr);
 
 void deleteMatrixCol(matrixCol* mc);
 
-matrix * generateRandomMatrix(int rows, int cols);
-
-void rankOfMatrix2(matrix * mtx, int rank);
 
 #endif //CRIPTO_MATRIX_H

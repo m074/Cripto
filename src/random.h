@@ -15,6 +15,4 @@
 int64_t seed; /*seed debe ser de 48 bits; se elige este tipo de 64 bits*/
 void setSeed(int64_t seed);
 uint8_t nextChar(void); /*devuelve un unsigned char*/
-uint8_t
-nextCharLimit(uint8_t limit);
 #endif //CRIPTO_RANDOM_H

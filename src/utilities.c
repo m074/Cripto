@@ -5,12 +5,7 @@
 #include <stdlib.h>
 #include "utilities.h"
 
-void assure(int truth, char* message) {
-    if (!truth) {
-        printf("%s", message);
-        exit(0);
-    }
-}
+
 
 int modInverse(int i) {
     while(i<=0){

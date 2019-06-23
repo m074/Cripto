@@ -76,10 +76,6 @@ void deleteMatrixCol(matrixCol* mc){
 }
 
 
-#define ELEMFROMARRAY(mtx, row, col, dim) \
-  mtx[(col) * dim + (row)]
-
-
 /* Copies a matrix.  Returns NULL if mtx is NULL.
  */
 matrix * copyMatrix(matrix * mtx) {
@@ -282,23 +278,6 @@ int product(matrix * mtx1, matrix * mtx2, matrix * prod) {
 	return 0;
 }
 
-/* Writes the dot product of vectors v1 and v2 into
- * reference prod.  Returns 0 if successful, -1 if any of
- * v1, v2, or prod are NULL, -2 if either matrix is not a
- * vector, and -3 if the vectors are of incompatible
- * dimensions.
- */
-int dotProduct(matrix * v1, matrix * v2, int32_t * prod) {
-	if (!v1 || !v2 || !prod) return -1;
-	if (v1->cols != 1 || v2->cols != 1) return -2;
-	if (v1->rows != v2->rows) return -3;
-
-	*prod = 0;
-	int i;
-	for (i = 1; i <= v1->rows; i++)
-		*prod += ELEM(v1, i, 1) * ELEM(v2, i, 1);
-	return 0;
-}
 
 int identity(matrix * m) {
 	if (!m || m->rows != m->cols) return -1;
@@ -717,13 +696,6 @@ matrix * newMatrixSh(matrix * v, matrix * g) {
             ELEM(results,i,j) = ELEM(g, i, j - 1);
         }
     }
-    normalize(results);
-    return results;
-}
-
-matrix * newSecretMatrixS(matrix * doubleS, matrix * r) {
-    matrix * results = newMatrix(doubleS->rows, doubleS->cols);
-    substract(doubleS, r, results);
     normalize(results);
     return results;
 }

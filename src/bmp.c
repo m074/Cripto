@@ -167,7 +167,6 @@ Img** read_images_from_dir(char * directory, int n) {
     Img** images = malloc(8 * sizeof(Img*));
     char * path;
 
-    //assure(dir != NULL, "Problem opening directory, check your sintax.\n");
     while ((p_dirent = readdir(dir)) != NULL) {
         if(strstr(p_dirent->d_name, ".bmp") && image_qty < n && image_qty <= n) {
             path = calloc(strlen(directory) + strlen(p_dirent->d_name) + 2, 1);
@@ -175,7 +174,6 @@ Img** read_images_from_dir(char * directory, int n) {
             strcat(path, "/");
             strcat(path, p_dirent->d_name);
 
-            // images[image_qty] = malloc(sizeof(image_t));
             images[image_qty++] = read_bmp(path);
             free(path);
         }
@@ -237,11 +235,8 @@ matrix* getMatrixSh(Img* img,int pos, int n){
                 valor = valor | bit;
                 matrix_offset+=1;
             }
-//            valor =recover_lsb_width2(img->bb->p+(img->offset+matrix_offset),0);
             ELEM(sh,i,j)=valor;
         }
-
-
 
     }
 
