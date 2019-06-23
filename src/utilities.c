@@ -56,9 +56,9 @@ uint32_t modProd(uint32_t a, uint32_t b)
     return r < 0 ? r + 251 : r;
 }
 
-int32_t modNorm(uint8_t i){
+int32_t modNorm(int64_t i){
     while(i<=0){
-        i+=251;
+        i+=251*1024;
     }
     i %= 251;
     return i;

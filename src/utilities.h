@@ -26,5 +26,5 @@ int modInverse(int i);
 void assure(int truth, char* message);
 int32_t multiplicativeInverse(int number);
 uint32_t modProd(uint32_t a, uint32_t b);
-int32_t modNorm(uint8_t i);
+int32_t modNorm(int64_t i);
 #endif //CRIPTO_UTILITIES_H
