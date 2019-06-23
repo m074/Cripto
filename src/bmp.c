@@ -181,6 +181,44 @@ int getQuantiyMatrixS(Img* img,int n){
     return (img->height*img->width)/(n*n);
 }
 
+
+#define BIT(n) (0x01 << (n))
+#define GET_BIT(x, n) (((x) >> (n)) & 1)
+
+void distribute_lsb_width1(uint8_t byte, uint8_t *pixels, size_t pos) {
+    int i;
+    for (i = 0; i < 8; i++) {
+        pixels[i] = (pixels[i] & ~BIT(pos)) | (GET_BIT(byte, 8 - 1 - i) << pos);
+    }
+}
+
+uint8_t recover_lsb_width2(uint8_t *bytes, size_t pos)
+{
+    int i;
+    uint8_t byte = 0;
+    for (i = 0; i < 4; i++)
+    {
+        uint8_t bits = bytes[i] & (0x03 << pos);
+        bits = bits >> pos;
+        byte |= (bits << (8 - 2 - (i * 2)));
+    }
+
+    return byte;
+}
+
+uint8_t recover_lsb_width1(uint8_t *bytes, size_t pos) {
+    int i;
+    uint8_t byte = 0;
+    for (i = 0; i < 8; i++) {
+        uint8_t bit = bytes[i] & BIT(pos);
+        bit = bit >> pos;
+        byte |= (bit << (8 - 1 - i));
+    }
+
+    return byte;
+}
+
+
 void putMatrixSh(Img* img,matrix* sh,int pos, int n) {
     int32_t matrix_offset =n* n * 3 * pos;
 
@@ -205,25 +243,27 @@ void putMatrixSh(Img* img,matrix* sh,int pos, int n) {
 }
 matrix* getMatrixSh(Img* img,int pos, int n){
     int32_t  matrix_offset = n*3*n*pos;
-    int pasos=2;
-    if(n==8){
-        pasos=1;
-    }
     matrix* sh=newMatrix(n,3);
-
-    for(int j=1;j<=3;j++){
+    int pasos = 2;
+    if (n == 8) {
+        pasos = 1;
+    }
         for(int i=1;i<=n;i++){
-            int valor=0;
-            for(int v=0;v<n;v++){
-                int bit=get_bits(img,matrix_offset,pasos);
-                valor= valor<< pasos;
-                valor= valor | bit;
+            for(int j=1;j<=3;j++){
+
+                uint8_t valor=0;
+            for(int v=0;v<n;v++) {
+                int bit = get_bits(img, matrix_offset, 2);
+                valor = valor << 2;
+                valor = valor | bit;
                 matrix_offset+=1;
             }
+//            valor =recover_lsb_width2(img->bb->p+(img->offset+matrix_offset),0);
             ELEM(sh,i,j)=valor;
-
-
         }
+
+
+
     }
 
     return sh;
