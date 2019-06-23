@@ -265,6 +265,9 @@ int product(matrix * mtx1, matrix * mtx2, matrix * prod) {
 		mtx2->cols != prod->cols)
 		return -2;
 
+	normalize(mtx1);
+	normalize(mtx2);
+
 	int row, col, k;
 	for (col = 1; col <= mtx2->cols; col++)
 		for (row = 1; row <= mtx1->rows; row++) {
@@ -272,7 +275,7 @@ int product(matrix * mtx1, matrix * mtx2, matrix * prod) {
 			for (k = 1; k <= mtx1->cols; k++){
                 val+= modProd(ELEM(mtx1, row, k), ELEM(mtx2, k, col));
 //			    val+= ELEM(mtx1, row, k) * ELEM(mtx2, k, col);
-			    val = val%251;
+			    val = modNorm(val);
 			}
 			ELEM(prod, row, col) = val;
 		}
@@ -351,112 +354,7 @@ int diagonal(matrix * v, matrix * mtx) {
 	return 0;
 }
 
-static void swap(matrix * mtx, int row1, int row2, int col)
-{
-	for (int i = 1; i <= col; i++)
-	{
-        int32_t temp = ELEM(mtx,row1,i);
-		ELEM(mtx,row1,i) = ELEM(mtx,row2,i);
-		ELEM(mtx,row2,i) = temp;
-	}
-}
 
-
-
-int rankOfMatrix(matrix * mtx)
-{
-	int rank = mtx->cols;
-	int R = mtx->rows;
-
-	for (int row = 1; row <= rank && row <= R; row++) {
-        int32_t elem = ELEM(mtx,row,row);
-        if (elem != 0) {
-            for (int col = 1; col <= R; col++) {
-                if (col != row) {
-                    double mult = (double) ELEM(mtx,col,row) /
-                                  ELEM(mtx,row,row);
-
-                    for (int i = 1; i <= rank; i++){
-                        ELEM(mtx,col,i) -= mult * ELEM(mtx,row,i);
-                    }
-                }
-            }
-        } else {
-            bool reduce = true;
-            for (int i = row + 1; i <= R;  i++) {
-                if (ELEM(mtx,i,row)) {
-                    swap(mtx, row, i, rank);
-                    reduce = false;
-                    break ;
-                }
-            }
-            if (reduce) {
-                rank--;
-                for (int i = 1; i <= R; i ++) {
-                    ELEM(mtx, i, row) = ELEM(mtx, i, rank);
-                }
-            }
-            row--;
-        }
-    }
-	return rank;
-}
-
-int32_t randomNum(){
-    int32_t elem = 0;
-    while(elem == 0){
-        elem = nextCharLimit(251);
-    }
-    return elem;
-}
-
-int32_t randomNumNormalized(int mult) {
-//    printf("MULT:%d\n", mult);
-    int32_t elem = 0;
-    while(elem == 0){
-        elem = nextCharLimit(251/mult);
-    }
-//    printf("ELEM: %d, ELEM * MULT: %d\n", elem, elem * mult);
-    return elem;
-}
-
-void rankOfMatrix2(matrix * mtx, int rank)
-{
-    int i,j;
-    identity(mtx);
-    int32_t * cols = (int32_t *) malloc((mtx->cols)*sizeof(int32_t));
-    for(i = 0; i < mtx->cols; i++){
-        cols[i] = randomNumNormalized(mtx->rows - rank);
-    }
-    for(i = 1; i <= mtx->rows; i++){
-        for(j = 1; j <=mtx->cols; j++){
-            if(i == j && j <= rank){
-                ELEM(mtx, i,j) = randomNum();
-            }
-            if(i==rank && j >= rank) {
-                ELEM(mtx, i,j) = randomNum();
-            }
-            if(i == j && j > rank) {
-                ELEM(mtx, i,j) = nextChar();
-            }
-            if(i > rank) {
-                ELEM(mtx, i,j) = (i - rank) * cols[j-1];
-            }
-        }
-    }
-    free(cols);
-//    printMatrix(mtx);
-}
-
-bool invertible(matrix * mtx) {
-    int i;
-    for(i = 1; i <= mtx->cols; i++){
-        if(ELEM(mtx,i,i) == 0) {
-            return false;
-        }
-    }
-    return true;
-}
 
 void multiplyByScalar(matrix * mtx, int32_t scalar){
     int i,j;
@@ -469,37 +367,28 @@ void multiplyByScalar(matrix * mtx, int32_t scalar){
 }
 
 matrix * newMatrixA(int n, int k) {
-    matrix *mtx = newMatrix(n, k);
-    rankOfMatrix2(mtx, k);
-//
-//    for(int j=1;j<=mtx->cols;j++){
-//        int tmp=1;
-//        for(int i=1;i<=mtx->rows;i++){
-//            setElement(mtx, i, j, tmp); // DEBUG
-////            tmp=tmp*a;
-//        }
-//        a+=1;
-//    }
 
+    matrix* rot=newMatrix(n,k);
+    for(int i=1;i<=rot->rows;i++){
+        for(int j=1;j<=rot->cols;j++){
+            if(i>rot->cols || i==j){
+                setElement(rot,i,j,modNorm(nextChar()));
+            }
+        }
+    }
+    matrix* rott=newMatrix(rot->cols,rot->rows);
+    transpose(rot,rott);
+    matrix* pro =newMatrix(rot->cols,rot->cols);
+    product(rott,rot,pro);
+    int det=modNorm(determinant(pro));
+    deleteMatrix(pro);
+    deleteMatrix(rott);
+    if(det==0){
+        deleteMatrix(rot);
+        rot=newMatrixA(n,k);
+    }
+    return rot;
 
-
-
-//    for (int i = 1; i <= mtx->rows; i++){
-//        for (int j = 1; j <= mtx->cols; j++) {
-//                ELEM(mtx, i, j) = nextChar()%251;
-//        }
-//    }
-//    matrix* matrix = mtx;
-//    setElement(matrix, 0+1, 0+1, 3); // DEBUG
-//    setElement(matrix, 0+1, 1+1, 7); // DEBUG
-//    setElement(matrix, 1+1, 0+1, 6); // DEBUG
-//    setElement(matrix, 1+1, 1+1, 1); // DEBUG
-//    setElement(matrix, 2+1, 0+1, 2); // DEBUG
-//    setElement(matrix, 2+1, 1+1, 5); // DEBUG
-//    setElement(matrix, 3+1, 0+1, 6); // DEBUG
-//    setElement(matrix, 3+1, 1+1, 6); // DEBUG
- normalize(mtx);
-    return mtx;
 }
 
 void normalize(matrix * m){
@@ -649,16 +538,16 @@ matrix* recoverMatrixS(matrix* mdobles, matrix* mr){
 
 matrixCol* getVectorsX(int size, int quantity){
     matrixCol *mc=newMatrixCol(quantity);
-    int a = nextChar() %251;
+    int a = modNorm(nextChar());
 
     for(int i=0;i<quantity;i++){
         mc->matrixes[i]=newMatrix(size,1);
         int prev=1;
        for(int j=1;j<=size;j++){
-            ELEM(mc->matrixes[i],j,1)=(prev)%251;
+            ELEM(mc->matrixes[i],j,1)=modNorm(prev);
            prev= prev*a;
         }
-        a= nextChar() %251;
+       a=modNorm(a+1);
         if(a==1){
             a=3;
         }
@@ -781,10 +670,7 @@ matrix * getrsmall(matrixCol * allG, uint8_t * c, int x, int y) {
 
     }
 
-//    printMatrix(cMatrix);
-//    printf("\n");
-//    printMatrix(g);
-//    printf("\nx: %d, y:%d\n", x, y);
+
     matrix* rot= solveEquations(cMatrix, g);
     deleteMatrix(cMatrix);
     deleteMatrix(g);
@@ -811,10 +697,6 @@ matrix * solveEquations(matrix * m, matrix * g) {
     }
         normalize(results);
 
-//    printMatrix(m);
-//    printMatrix(g);
-//    printMatrix(results);
-//    printf("---------\n");
 
     return results;
 }
@@ -875,15 +757,7 @@ matrixCol* getMatrixColG(matrixCol* mcol_shadows, int k){
     return mcg;
 }
 
-matrix * generateRandomMatrix(int rows, int cols) {
-    int i,j;
-    matrix * result = newMatrix(rows, cols);
 
-    for(i = 1; i <= rows; i++)
-        for(j = 1; j <= cols; j++)
-            setElement(result, i, j, nextChar());
-    return result;
-}
 
 
 

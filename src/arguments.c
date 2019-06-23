@@ -130,21 +130,21 @@ void distribute(Configuration* cfg){
 
         }
 
-        if(i==0){
-            printf("Matrix la Sdoble\n");
-            printMatrix(mdoubles);
-            printf("Matrix la R\n");
-            printMatrix(mr);
-            printf("Matrix la S\n");
-
-            printMatrix(ms);
-            printf("Matrix la RW\n");
-            printMatrix(mrw);
-            for(int kk=0;kk<mcs->size;kk++){
-                printf("Shadow\n");
-                printMatrix(mcs->matrixes[kk]);
-            }
-        }
+//        if(i==0){
+//            printf("Matrix la Sdoble\n");
+//            printMatrix(mdoubles);
+//            printf("Matrix la R\n");
+//            printMatrix(mr);
+//            printf("Matrix la S\n");
+//
+//            printMatrix(ms);
+//            printf("Matrix la RW\n");
+//            printMatrix(mrw);
+//            for(int kk=0;kk<mcs->size;kk++){
+//                printf("Shadow\n");
+//                printMatrix(mcs->matrixes[kk]);
+//            }
+//        }
 
 
         putMatrixS(m_image,mrw,i,n);
@@ -220,28 +220,28 @@ void recover(Configuration* cfg){
         putMatrixS(s_image,ms,i,n);
         putMatrixS(w_image,mw,i,n);
 
-        if(i==0){
-
-            printf("Matrix la B\n");
-            printMatrix(mb);
-            printf("Matrix la R\n");
-            printMatrix(mr);
-            printf("Matrix la Sdoble\n");
-            printMatrix(mdobleS);
-            printf("Matrix la S\n");
-            printMatrix(ms);
-            printf("Matrix la RW\n");
-            printMatrix(mrw);
-            for(int kk=0;kk<mcsh->size;kk++){
-                printf("Shadow\n");
-                printMatrix(mcsh->matrixes[kk]);
-            }
-
-            for(int kk=0;kk<mcsh->size;kk++){
-                printf("gg\n");
-                printMatrix(mcg->matrixes[kk]);
-            }
-        }
+//        if(i==0){
+//
+//            printf("Matrix la B\n");
+//            printMatrix(mb);
+//            printf("Matrix la R\n");
+//            printMatrix(mr);
+//            printf("Matrix la Sdoble\n");
+//            printMatrix(mdobleS);
+//            printf("Matrix la S\n");
+//            printMatrix(ms);
+//            printf("Matrix la RW\n");
+//            printMatrix(mrw);
+//            for(int kk=0;kk<mcsh->size;kk++){
+//                printf("Shadow\n");
+//                printMatrix(mcsh->matrixes[kk]);
+//            }
+//
+//            for(int kk=0;kk<mcsh->size;kk++){
+//                printf("gg\n");
+//                printMatrix(mcg->matrixes[kk]);
+//            }
+//        }
 
         deleteMatrix(ms);
         deleteMatrix(mb);

@@ -32,7 +32,6 @@ Img* read_bmp(char* filename){
     memcpy(&offset, img->bb->p + BODY_START_HEADER_OFFSET, BODY_START_HEADER_SIZE);
 
     memcpy(&c, img->bb->p + 6, 1);
-    printf("--------c===%d-----\n",c);
     img->width = width;
     img->height = height;
     img->bits = bits_per_pixel;
