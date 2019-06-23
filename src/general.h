@@ -41,6 +41,8 @@ typedef struct bmp_t
     u_int8_t   bits;
     u_int32_t  offset;
     BBuffer*   bb;
+    u_int8_t c;
+
 } Img;
 
 typedef struct conf_t
@@ -87,5 +89,7 @@ u_int8_t get_bits(Img* img,u_int32_t pos, int bits);
 void deleteImg(Img* img);
 
 void set_bits(Img* img,u_int32_t pos, u_int8_t value, int bits);
+
+void set_c(Img* img, u_int8_t c);
 
 #endif //CRIPTO_GENERAL_H

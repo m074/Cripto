@@ -25,5 +25,6 @@ static const int inverses[] = {1, 126, 84, 63, 201, 42, 36, 157, 28, 226, 137, 2
 int modInverse(int i);
 void assure(int truth, char* message);
 int32_t multiplicativeInverse(int number);
-
+uint32_t modProd(uint32_t a, uint32_t b);
+int32_t modNorm(uint8_t i);
 #endif //CRIPTO_UTILITIES_H

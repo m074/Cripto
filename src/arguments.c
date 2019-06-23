@@ -5,7 +5,6 @@
 #include <time.h>
 #include "general.h"
 
-int cs[8]={2,3,4,5,6,7,8,11};
 
 
 void help();
@@ -69,12 +68,20 @@ Configuration* parse_options(int argc, char *argv[]){
                 abort();
         }
     }
+    int n=cfg->number_n;
+    int k=cfg->number_k;
+    if(!((n==8 && k==4)||(n==4 && k==2))){
+        printf("Solamente se soporta en k=2,n=4 y en k=4,n=8\n");
+        exit(EXIT_FAILURE);
+    }
     select_mode(cfg);
+
+
+
     return cfg;
 }
 
 void select_mode(Configuration* cfg){
-    //TODO chekear flags invalidos
 
 
     if(cfg->number_n==0 || cfg->m_image_name==0){
@@ -95,12 +102,16 @@ void select_mode(Configuration* cfg){
 
 void distribute(Configuration* cfg){
 
+    int cs[8]={0,1,2,3,4,5,6,7};
 
     int n= cfg->number_n;
     int k= cfg->number_k;
     Img* s_image  = read_bmp(cfg->s_image_name);
     Img* m_image  = read_bmp(cfg->m_image_name);
     Img** sh_images = read_images_from_dir(cfg->dir,n); //hay N imagenes
+    for(int xin=0;xin<n;xin++){
+        set_c(sh_images[xin],cs[xin]);
+    }
 
     for(int32_t i=0;i<getQuantiyMatrixS(s_image,n);i++){
         matrix* ma=newMatrixA(n,k);
@@ -122,7 +133,10 @@ void distribute(Configuration* cfg){
         if(i==0){
             printf("Matrix la Sdoble\n");
             printMatrix(mdoubles);
+            printf("Matrix la R\n");
+            printMatrix(mr);
             printf("Matrix la S\n");
+
             printMatrix(ms);
             printf("Matrix la RW\n");
             printMatrix(mrw);
@@ -149,7 +163,7 @@ void distribute(Configuration* cfg){
 
 
     }
-    writefile(m_image->bb,"RW.bmp"); //TODO RW IMAGE
+    writefile(m_image->bb,"RW.bmp");
 
     for(int ar=0;ar<n;ar++){
         writefile(sh_images[ar]->bb,sh_images[ar]->filename);
@@ -176,6 +190,12 @@ void recover(Configuration* cfg){
 
     Img* w_image = copy_img(rw_image);
     change_filename(w_image,"watermark.bmp");
+
+    uint8_t * cs=malloc(sizeof(uint8_t)*k);
+    for(int xin=0;xin<k;xin++){
+        cs[xin]=sh_images[xin]->c;
+    }
+
 
     for(int32_t i=0;i<getQuantiyMatrixS(rw_image,n);i++){
         matrixCol* mcsh=newMatrixCol(k);
@@ -242,6 +262,7 @@ void recover(Configuration* cfg){
         deleteImg(sh_images[sh]);
     }
     free(sh_images);
+    free(cs);
 }
 
 void help() {printf("La ayuda...\n");}

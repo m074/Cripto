@@ -1,9 +1,15 @@
 
+#include <unistd.h>
 #include "general.h"
 
 BBuffer* readfile(char* filename){
     FILE *fd;
-    printf("Abriendo el archivo: %s\n",filename);
+
+
+    if( access( filename, F_OK ) == -1 ) {
+        printf("No se pudo abrir el archivo: %s\n",filename);
+        exit(EXIT_FAILURE);
+    }
     if ((fd = fopen(filename, "rb")) == NULL)
     {
         return NULL;
@@ -33,7 +39,7 @@ int writefile(BBuffer* bb, char* filename){
     {
         return 0;
     }
-    fwrite(bb->p,1,bb->length,fd); //TODO arreglar
+    fwrite(bb->p,1,bb->length,fd);
     fclose(fd);
     return 1;
 }

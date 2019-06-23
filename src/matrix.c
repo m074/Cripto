@@ -269,9 +269,10 @@ int product(matrix * mtx1, matrix * mtx2, matrix * prod) {
 	for (col = 1; col <= mtx2->cols; col++)
 		for (row = 1; row <= mtx1->rows; row++) {
             int64_t val = 0;
-			for (k = 1; k <= mtx1->cols; k++)
-				val += (ELEM(mtx1, row, k) * ELEM(mtx2, k, col))%251;
+			for (k = 1; k <= mtx1->cols; k++){
+			    val+= modProd(ELEM(mtx1, row, k) ,ELEM(mtx2, k, col));
 			    val = val%251;
+			}
 			ELEM(prod, row, col) = val;
 		}
 	return 0;
@@ -587,9 +588,7 @@ matrix * inverse(matrix * a) {
     matrix * t = newMatrix(a->rows, a->cols);
     transpose(ans, t);
     int64_t scalar = determinant(a);
-    if(scalar > 251 || scalar < 0){
-        scalar = multiplicativeInverse(scalar);
-    }
+    scalar = multiplicativeInverse(scalar);
     multiplyByScalar(t, scalar);
     normalize(t);
 
@@ -697,7 +696,7 @@ matrixCol * generateAllMatrixG(int size, int32_t * c, matrix * r) {
     int i;
     matrixCol * mc = newMatrixCol(size);
     for(i = 0; i < size; i++){
-        mc->matrixes[i] = newMatrixG(r, c[i]);
+        mc->matrixes[i] = newMatrixG(r, c[i]+1);
         normalize(mc->matrixes[i]);
     }
     return mc;
@@ -705,8 +704,7 @@ matrixCol * generateAllMatrixG(int size, int32_t * c, matrix * r) {
 
 
 matrix* newMatrixB(matrixCol* mc, int k){
-    matrix * b = newMatrix(mc->matrixes[0]->rows, k); //TODO FIX MAGIC NUMBER
-
+    matrix * b = newMatrix(mc->matrixes[0]->rows, k);
     for(int i = 1; i <= mc->matrixes[0]->rows; i++){
         for(int j = 0; j<k;j++){
             setElement(b, i, j+1, ELEM(mc->matrixes[j], i,1));
@@ -746,7 +744,7 @@ matrix * subMatrix(matrix * m, int col) {
 
 
 
-matrix* recoverMatrixR(matrixCol* allG, int32_t* c){
+matrix* recoverMatrixR(matrixCol* allG, uint8_t * c){
     matrix * mr = newMatrix(allG->matrixes[0]->rows,allG->matrixes[0]->rows);
     for(int i=1;i<=mr->rows;i++){ // por las filas de g
         for(int j=1;j<=2;j++){ // por la cnatidad de columnas de g
@@ -761,20 +759,8 @@ matrix* recoverMatrixR(matrixCol* allG, int32_t* c){
     return mr;
 }
 
-matrix * solveEquations2(matrix * m, matrix * g) {
-    matrix * results = newMatrix(m->rows, 1);
-    matrix* minv=inverse(m);
-    product(minv,g,results);
-    deleteMatrix(minv);
-    return results;
-}
 
-
-
-
-
-
-matrix * getrsmall(matrixCol * allG, int32_t * c, int x, int y) {
+matrix * getrsmall(matrixCol * allG, uint8_t * c, int x, int y) {
     int i;
     matrix * cMatrix = newMatrix(allG->size, allG->size);
     matrix * g = newMatrix(allG->size, 1);
@@ -805,103 +791,6 @@ matrix * getrsmall(matrixCol * allG, int32_t * c, int x, int y) {
 
 matrix * solveEquations(matrix * m, matrix * g) {
     matrix * results = newMatrix(m->rows, 1);
-//    for(int i=2;i<=m->rows;i++){ // por las filas de g
-//        ELEM(g,i,1)=ELEM(g,i,1)-ELEM(g,1,1);
-//
-//        for(int j=1;j<=m->cols;j++){
-//            ELEM(m,i,j)=ELEM(m,i,j)-ELEM(m,1,j);
-//        }
-//    }
-//
-//    for(int i=3;i<=m->rows;i++){ // por las filas de g
-//        ELEM(g,i,1)=ELEM(g,i,1)-ELEM(g,2,1)*(i-1);
-//
-//        for(int j=1;j<=m->cols;j++){
-//            ELEM(m,i,j)=ELEM(m,i,j)-ELEM(m,2,j)*(i-1);;
-//        }
-//    }
-//
-//    for(int i=4;i<=m->rows;i++){ // por las filas de g
-//        ELEM(g,i,1)=ELEM(g,i,1)-ELEM(g,3,1)*(i-1);
-//
-//        for(int j=1;j<=m->cols;j++){
-//            ELEM(m,i,j)=ELEM(m,i,j)-ELEM(m,3,j)*(i-1);;
-//        }
-//    }
-//if(m->rows==4){
-//    ELEM(g,3,1)=ELEM(g,3,1)-ELEM(g,4,1);
-//    for(int j=1;j<=m->cols;j++) {
-//        ELEM(m, 3, j) = ELEM(m, 3, j) - ELEM(m, 4, j);;
-//    }
-//
-//    ELEM(g,2,1)=ELEM(g,2,1)-ELEM(g,3,1);
-//    for(int j=1;j<=m->cols;j++) {
-//        ELEM(m, 2, j) = ELEM(m, 2, j) - ELEM(m, 3, j);;
-//    }
-//    ELEM(g,1,1)=ELEM(g,1,1)-ELEM(g,2,1);
-//
-//    for(int j=1;j<=m->cols;j++){
-//        ELEM(m,1,j)=ELEM(m,1,j)-ELEM(m,2,j);;
-//
-//    }
-//
-//}
-
-//    if(m->rows==4){
-//        for(int i=2;i<=3;i++){ // por las filas de g
-//            ELEM(g,i,1)=ELEM(g,i,1)-ELEM(g,4,1);
-//            for(int j=1;j<=m->cols;j++){
-//                ELEM(m,i,j)=ELEM(m,i,j)-ELEM(m,4,j);;
-//            }
-//        }
-//        for(int j=1;j<=m->cols;j++){
-//            ELEM(m,3,j)=ELEM(m,3,j)-ELEM(m,4,j);;
-//        }
-//        ELEM(g,4,1)=round(ELEM(g,4,1)/6);
-//        for(int j=1;j<=m->cols;j++){
-//            ELEM(m,4,j)=ELEM(m,4,j)/6;
-//        }
-//        ELEM(g,3,1)=round(ELEM(g,3,1)/2);
-//        for(int j=1;j<=m->cols;j++){
-//            ELEM(m,3,j)=ELEM(m,3,j)/2;
-//        }
-//        for(int i=1;i<=2;i++) { // por las filas de g
-//            ELEM(g, i, 1) = ELEM(g, i, 1) - ELEM(g, 4, 1);
-//            for (int j = 1; j <= m->cols; j++) {
-//                ELEM(m, i, j) = ELEM(m, i, j) - ELEM(m, 4, j);;
-//            }
-//        }
-//        for(int i=1;i<=2;i++){ // por las filas de g
-//            ELEM(g,i,1)=ELEM(g,i,1)-ELEM(g,3,1);
-//            for(int j=1;j<=m->cols;j++){
-//                ELEM(m,i,j)=ELEM(m,i,j)-ELEM(m,3,j);;
-//            }
-//        }
-//        for(int i=2;i<=2;i++){ // por las filas de g
-//            ELEM(g,i,1)=ELEM(g,i,1)-ELEM(g,3,1);
-//            for(int j=1;j<=m->cols;j++){
-//                ELEM(m,i,j)=ELEM(m,i,j)-ELEM(m,3,j);;
-//            }
-//        }
-//        for(int i=2;i<=2;i++){ // por las filas de g
-//            ELEM(g,i,1)=ELEM(g,i,1)-ELEM(g,3,1);
-//            for(int j=1;j<=m->cols;j++){
-//                ELEM(m,i,j)=ELEM(m,i,j)-ELEM(m,3,j);;
-//            }
-//        }
-//        for(int i=1;i<=1;i++){ // por las filas de g
-//            ELEM(g,i,1)=ELEM(g,i,1)-ELEM(g,2,1);
-//            for(int j=1;j<=m->cols;j++){
-//                ELEM(m,i,j)=ELEM(m,i,j)-ELEM(m,2,j);;
-//            }
-//        }
-//    }
-//    deleteMatrix(results);
-//    results=copyMatrix(g);
-//    return results;
-
-
-
 
 
 
@@ -916,10 +805,14 @@ matrix * solveEquations(matrix * m, matrix * g) {
         int64_t dx = determinant(copy);
         deleteMatrix(copy);
         ELEM(results,j,1)=dx * modInverse(det);
+
     }
+        normalize(results);
+
+//    printMatrix(m);
+//    printMatrix(g);
 //    printMatrix(results);
-//    ELEM(results,4,1)=cache/6;
-//    printMatrix(results);
+//    printf("---------\n");
 
     return results;
 }

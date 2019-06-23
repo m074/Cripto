@@ -85,11 +85,11 @@ matrix* newMatrixB(matrixCol* mc, int k);
 
 matrix * subMatrix(matrix * m, int col);
 
-matrix * getrsmall(matrixCol * allG, int32_t * c, int x, int y);
+matrix * getrsmall(matrixCol * allG, __uint8_t * c, int x, int y);
 
 matrix * solveEquations(matrix * m, matrix * g);
 
-matrix* recoverMatrixR(matrixCol* allG, int32_t* c);
+matrix* recoverMatrixR(matrixCol* allG, uint8_t * c);
 
 matrix * newMatrixRW(matrix * w, matrix * doubleS);
 

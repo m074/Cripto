@@ -23,19 +23,28 @@ Img* read_bmp(char* filename){
     u_int16_t bits_per_pixel;
     u_int32_t compression;
     u_int32_t offset;
+    u_int8_t c;
 
     memcpy(&width, img->bb->p + WIDTH_HEADER_OFFSET, WIDTH_HEADER_SIZE);
     memcpy(&height, img->bb->p + HEIGHT_HEADER_OFFSET, HEIGHT_HEADER_SIZE);
     memcpy(&bits_per_pixel, img->bb->p + BITS_PER_PIXEL_HEADER_OFFSET, BITS_PER_PIXEL_HEADER_SIZE);
-    memcpy(&compression, img->bb->p + COMPRESSION_HEADER_OFFSET, COMPRESSION_HEADER_SIZE); //TODO sacar?
+    memcpy(&compression, img->bb->p + COMPRESSION_HEADER_OFFSET, COMPRESSION_HEADER_SIZE);
     memcpy(&offset, img->bb->p + BODY_START_HEADER_OFFSET, BODY_START_HEADER_SIZE);
 
+    memcpy(&c, img->bb->p + 6, 1);
+    printf("--------c===%d-----\n",c);
     img->width = width;
     img->height = height;
     img->bits = bits_per_pixel;
     img->offset = offset;
+    img->c = c+1;
 
     return img;
+}
+
+void set_c(Img* img, u_int8_t c){
+    img->c = c;
+    memcpy(img->bb->p + 6,&c, 1);
 }
 
 void change_filename(Img* img,char* filename){
@@ -72,7 +81,7 @@ void set_byte(Img* img,u_int32_t pos, u_int8_t value){
     img->bb->p[img->offset + pos]=value;
 }
 
-void set_bits(Img* img,u_int32_t pos, u_int8_t value, int bits){ //TODO check
+void set_bits(Img* img,u_int32_t pos, u_int8_t value, int bits){
     u_int8_t c = get_byte(img,pos);
     if(bits==1){
         value = value >> 7;
@@ -124,9 +133,10 @@ void reduceto251(matrix * m){
 matrix* getMatrixS(Img* img, int number,int size){
     matrix* m = newMatrix(size,size);
     __uint8_t* pos = img->bb->p + img->offset + (number*size*size);
-    for(int j=1; j<=size; j++){
         for(int i=1; i<=size; i++){
-            setElement(m,i,j,*pos);
+            for(int j=1; j<=size; j++){
+
+                setElement(m,i,j,*pos);
             pos+=1;
         }
     }
@@ -137,8 +147,11 @@ matrix* getMatrixS(Img* img, int number,int size){
 
 void putMatrixS(Img* img,matrix* ms,int number,int size){
     __uint8_t* pos = img->bb->p + img->offset + (number*size*size);
-    for(int j=1; j<=size; j++){
-        for(int i=1; i<=size; i++){
+    for(int i=1; i<=size; i++){
+
+        for(int j=1; j<=size; j++){
+
+
             pos[0]= (u_int8_t)ELEM(ms,i,j);
             pos+=1;
         }
@@ -152,12 +165,12 @@ Img** read_images_from_dir(char * directory, int n) {
     struct dirent *p_dirent;
     DIR* dir;
     dir = opendir(directory);
-    Img** images = malloc(8 * sizeof(Img*)); //TODO magic number
+    Img** images = malloc(8 * sizeof(Img*));
     char * path;
 
     //assure(dir != NULL, "Problem opening directory, check your sintax.\n");
     while ((p_dirent = readdir(dir)) != NULL) {
-        if(strstr(p_dirent->d_name, ".bmp") && image_qty < n && image_qty <= n) { //TODO magic number
+        if(strstr(p_dirent->d_name, ".bmp") && image_qty < n && image_qty <= n) {
             path = calloc(strlen(directory) + strlen(p_dirent->d_name) + 2, 1);
             strcpy(path, directory);
             strcat(path, "/");
@@ -167,6 +180,10 @@ Img** read_images_from_dir(char * directory, int n) {
             images[image_qty++] = read_bmp(path);
             free(path);
         }
+    }
+    if(n!=image_qty){
+        printf("No hay la cantidad de imagenes necesaria \n");
+        exit(EXIT_FAILURE);
     }
     closedir(dir);
 
@@ -182,41 +199,6 @@ int getQuantiyMatrixS(Img* img,int n){
 }
 
 
-#define BIT(n) (0x01 << (n))
-#define GET_BIT(x, n) (((x) >> (n)) & 1)
-
-void distribute_lsb_width1(uint8_t byte, uint8_t *pixels, size_t pos) {
-    int i;
-    for (i = 0; i < 8; i++) {
-        pixels[i] = (pixels[i] & ~BIT(pos)) | (GET_BIT(byte, 8 - 1 - i) << pos);
-    }
-}
-
-uint8_t recover_lsb_width2(uint8_t *bytes, size_t pos)
-{
-    int i;
-    uint8_t byte = 0;
-    for (i = 0; i < 4; i++)
-    {
-        uint8_t bits = bytes[i] & (0x03 << pos);
-        bits = bits >> pos;
-        byte |= (bits << (8 - 2 - (i * 2)));
-    }
-
-    return byte;
-}
-
-uint8_t recover_lsb_width1(uint8_t *bytes, size_t pos) {
-    int i;
-    uint8_t byte = 0;
-    for (i = 0; i < 8; i++) {
-        uint8_t bit = bytes[i] & BIT(pos);
-        bit = bit >> pos;
-        byte |= (bit << (8 - 1 - i));
-    }
-
-    return byte;
-}
 
 
 void putMatrixSh(Img* img,matrix* sh,int pos, int n) {
@@ -226,15 +208,13 @@ void putMatrixSh(Img* img,matrix* sh,int pos, int n) {
     if (n == 8) {
         pasos = 1;
     }
-    int lala = 0;
-    for (int j = 1; j <= 3; j++) {
-        for (int i = 1; i <= n; i++) {
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= 3; j++) {
             int valor = ELEM(sh, i, j);
             for (int v = 0; v < n; v++) {
                 set_bits(img, matrix_offset, valor, pasos);
                 valor = valor << pasos;
                 matrix_offset += 1;
-                lala += 1;
             }
 
         }
@@ -253,8 +233,8 @@ matrix* getMatrixSh(Img* img,int pos, int n){
 
                 uint8_t valor=0;
             for(int v=0;v<n;v++) {
-                int bit = get_bits(img, matrix_offset, 2);
-                valor = valor << 2;
+                int bit = get_bits(img, matrix_offset, pasos);
+                valor = valor << pasos;
                 valor = valor | bit;
                 matrix_offset+=1;
             }
